@@ -1,0 +1,42 @@
+# Angular / Node generated files
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# .NET build output and local IDE state
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/*.suo
+**/*.csproj.user
+**/*.slnLaunch.user
+
+# Local configuration and secrets
+**/.env
+**/.env.*
+!**/.env.example
+**/appsettings*.json
+!**/appsettings.example.json
+**/secrets*.json
+**/secrets*.yaml
+**/secrets*.yml
+**/*.pfx
+**/*.pem
+**/*.key
+**/*.crt
+
+# Local databases, dumps, logs, and editor state
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/*.bak
+**/*.dump
+**/*.log
+**/.idea/
+**/.history/
+.vscode/*

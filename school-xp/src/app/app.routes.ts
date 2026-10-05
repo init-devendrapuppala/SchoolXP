@@ -1,0 +1,39 @@
+import { Routes } from '@angular/router';
+import { Login } from './login/login';
+import { RegisterSchool } from './register-school/register-school';
+import { Dashboard } from './dashboard/dashboard';
+import { ChangePassword } from './change-password/change-password';
+import { SetupSelection } from './setup-selection/setup-selection';
+import { AddEditStudent } from './add-edit-student/add-edit-student';
+import { AddEditStaff } from './add-edit-staff/add-edit-staff';
+import { StudentDetails } from './student-details/student-details';
+import { StaffDetails } from './staff-details/staff-details';
+import { ListStaff } from './list-staff/list-staff';
+import { ListStudents } from './list-students/list-students';
+import { ComingSoon } from './coming-soon/coming-soon';
+import { AddSchoolAdmin } from './add-school-admin/add-school-admin';
+import { AuthCallback } from './auth/auth-callback';
+import { RegisterStudent } from './register-student/register-student';
+import { RegisterStaff } from './register-staff/register-staff';
+
+export const routes: Routes = [
+    { path: '', component: Login },
+    { path: 'login', component: Login },
+        { path: 'auth/callback', component: AuthCallback },
+    { path: 'register-school', component: RegisterSchool },
+    { path: 'add-school-admin', component: AddSchoolAdmin },
+    { path: 'dashboard', component: Dashboard },
+    { path: 'register-student', component: RegisterStudent },
+    { path: 'register-staff', component: RegisterStaff },
+    { path: 'change-password', component: ChangePassword },
+    { path: 'setup', component: SetupSelection },
+    { path: 'add-edit-student/new', component: AddEditStudent },
+    { path: 'add-edit-student/:id', component: AddEditStudent },
+    { path: 'add-edit-staff/new', component: AddEditStaff },
+    { path: 'add-edit-staff/:id', component: AddEditStaff },
+    { path: 'student-details/:id', component: StudentDetails },
+    { path: 'staff-details/:id', component: StaffDetails },
+    { path: 'list-staff', component: ListStaff },
+    { path: 'list-students', component: ListStudents },
+    { path: 'coming-soon', component: ComingSoon }
+];

@@ -1,0 +1,96 @@
+<main class="registration-page">
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Staff records / New record</p>
+            <h1>Register a staff member</h1>
+            <p class="page-intro">Create a draft staff profile with identity and emergency contact details.</p>
+        </div>
+        <span class="status-label">Draft</span>
+    </header>
+
+    <form #registrationForm class="registration-form">
+        <section class="form-section" aria-labelledby="staff-personal-heading">
+            <div class="section-heading">
+                <span class="section-index">01</span>
+                <div>
+                    <h2 id="staff-personal-heading">Staff details</h2>
+                    <p>Use the email address the staff member will use to sign up.</p>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="staff-first-name">First name <span aria-hidden="true">*</span></label>
+                    <input id="staff-first-name" name="firstName" autocomplete="given-name" required />
+                </div>
+                <div class="field">
+                    <label for="staff-last-name">Last name <span aria-hidden="true">*</span></label>
+                    <input id="staff-last-name" name="lastName" autocomplete="family-name" required />
+                </div>
+                <div class="field">
+                    <label for="staff-email">Email address <span aria-hidden="true">*</span></label>
+                    <input id="staff-email" name="email" type="email" autocomplete="email" required />
+                    <span class="field-hint">The staff member must sign up with this same email address.</span>
+                </div>
+                <div class="field">
+                    <label for="staff-role-type">Staff role <span aria-hidden="true">*</span></label>
+                    <select id="staff-role-type" name="roleTypeId" required>
+                        <option value="">Select role</option>
+                        <option value="4">Academic staff</option>
+                        <option value="3">Administrative staff</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="staff-phone">Phone number <span aria-hidden="true">*</span></label>
+                    <input id="staff-phone" name="phone" type="tel" autocomplete="tel" required />
+                </div>
+                <div class="field field--wide">
+                    <label for="staff-aadhaar-number">Aadhaar number <span aria-hidden="true">*</span></label>
+                    <input id="staff-aadhaar-number" name="aadhaarNumber" inputmode="numeric" autocomplete="off" minlength="12" maxlength="12" pattern="[0-9]{12}" required />
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="staff-contact-heading">
+            <div class="section-heading">
+                <span class="section-index">02</span>
+                <div>
+                    <h2 id="staff-contact-heading">Emergency contact</h2>
+                    <p>Add someone the school can contact when needed.</p>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="emergency-first-name">First name <span aria-hidden="true">*</span></label>
+                    <input id="emergency-first-name" name="emergencyContactFirstName" autocomplete="given-name" required />
+                </div>
+                <div class="field">
+                    <label for="emergency-last-name">Last name <span aria-hidden="true">*</span></label>
+                    <input id="emergency-last-name" name="emergencyContactLastName" autocomplete="family-name" required />
+                </div>
+                <div class="field">
+                    <label for="emergency-relationship">Relationship <span aria-hidden="true">*</span></label>
+                    <input id="emergency-relationship" name="emergencyContactRelationship" required />
+                </div>
+                <div class="field">
+                    <label for="emergency-phone">Phone number <span aria-hidden="true">*</span></label>
+                    <input id="emergency-phone" name="emergencyContactPhone" type="tel" autocomplete="tel" required />
+                </div>
+                <div class="field">
+                    <label for="emergency-email">Email address</label>
+                    <input id="emergency-email" name="emergencyContactEmail" type="email" autocomplete="email" />
+                </div>
+            </div>
+        </section>
+
+        <aside class="signup-note" aria-label="Signup information">
+            <span class="note-mark" aria-hidden="true">i</span>
+            <p>The staff member can complete and submit their profile after signing up with the email entered above.</p>
+        </aside>
+
+        <p class="field-hint" role="status" aria-live="polite">{{ statusMessage }}</p>
+
+        <footer class="form-actions">
+            <button class="button-primary" type="button" [disabled]="isSaving" (click)="saveDraft(registrationForm)">Save draft</button>
+        </footer>
+    </form>
+</main>

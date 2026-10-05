@@ -1,0 +1,160 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    padding: 2rem;
+    color: #19233f;
+    font-family: "Avenir Next", "Century Gothic", "Trebuchet MS", sans-serif;
+    background: #fbfaf7;
+}
+
+main {
+    width: min(100%, 76rem);
+    margin: 0 auto;
+}
+
+header {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(25, 35, 63, 0.12);
+}
+
+header a {
+    color: #19233f;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+header p {
+    color: #687086;
+}
+
+h1,
+h2,
+h3 {
+    color: #19233f;
+}
+
+nav {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+nav a,
+button {
+    min-height: 3rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #19233f;
+    border-radius: 6px;
+    background: #19233f;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+nav a:first-child {
+    border-color: #7be0d0;
+    background: #7be0d0;
+    color: #19233f;
+}
+
+section {
+    margin-top: 3rem;
+}
+
+section > ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+section > ul > li .school-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 2rem;
+    width: 100%;
+    min-height: 7rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(25, 35, 63, 0.12);
+    border-radius: 0;
+    background: #eaf8f3;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.school-card:hover,
+.school-card:focus-visible {
+    border-color: #ec6b4d;
+    box-shadow: 0 0.75rem 1.5rem rgba(25, 35, 63, 0.1);
+    transform: translateY(-2px);
+}
+
+.school-one {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.school-one strong {
+    margin: 0;
+}
+
+.school-one span {
+    margin: 0;
+    color: #59627a;
+}
+
+.school-two dl {
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+}
+
+dt {
+    color: #687086;
+}
+
+dd {
+    margin: 0.25rem 0 0;
+    font-weight: 800;
+}
+
+#applications > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+button:hover,
+nav a:hover {
+    background: #ec6b4d;
+}
+
+nav a:first-child:hover {
+    background: #a1eee1;
+}
+
+@media (max-width: 48rem) {
+    :host {
+        padding: 1.5rem;
+    }
+
+    section > ul,
+    #applications > ul {
+        grid-template-columns: 1fr;
+    }
+
+    section > ul > li .school-card {
+        grid-template-columns: 1fr;
+        gap: 0.75rem 1rem;
+    }
+
+    .school-two dl {
+        gap: 1.5rem;
+    }
+}

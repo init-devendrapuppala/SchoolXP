@@ -1,0 +1,105 @@
+<main class="students-shell">
+    <div class="students-content">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Student directory</p>
+                <h1>Students</h1>
+                <p class="header-copy">A clear view of every learner, their route, and today's attendance.</p>
+            </div>
+            <div class="header-actions">
+                <a class="quiet-button" routerLink="/dashboard">Back to dashboard</a>
+                <a class="primary-button" routerLink="/add-edit-student/new"><span aria-hidden="true">+</span> Add student</a>
+            </div>
+        </header>
+
+        <section class="directory-intro" aria-labelledby="directory-heading">
+            <div>
+                <p class="section-kicker">2026 / 27 school year</p>
+                <h2 id="directory-heading">The student directory</h2>
+            </div>
+            <span class="directory-date">Attendance snapshot · Today</span>
+        </section>
+
+        <section class="summary-grid" aria-label="Student summary">
+            <article class="summary-card summary-card-accent">
+                <span class="summary-label">Total students</span>
+                <strong>{{ students.length }}</strong>
+                <span class="summary-note">Across all year groups</span>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Present today</span>
+                <strong>{{ students.filter(student => student.attendance === 'Present').length }}</strong>
+                <span class="summary-note">Ready for a full day of learning</span>
+            </article>
+            <article class="summary-card summary-card-warm">
+                <span class="summary-label">Needs attention</span>
+                <strong>{{ students.filter(student => student.attendance !== 'Present').length }}</strong>
+                <span class="summary-note">Late or absent today</span>
+            </article>
+        </section>
+
+        <section class="directory-panel" aria-labelledby="student-list-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-kicker">Directory</p>
+                    <h2 id="student-list-heading">All students <span>{{ filteredStudents.length }} shown</span></h2>
+                </div>
+                <button class="clear-button" type="button" (click)="clearFilters()">Reset filters</button>
+            </div>
+
+            <div class="directory-tools">
+                <label class="search-field">
+                    <span aria-hidden="true">⌕</span>
+                    <span class="visually-hidden">Search students</span>
+                    <input type="search" placeholder="Search by name, teacher or route" [(ngModel)]="searchTerm" (keyup.enter)="searchStudents()">
+                </label>
+                <button class="search-button" type="button" (click)="searchStudents()">Search</button>
+                <label class="select-field">
+                    <span class="visually-hidden">Filter by grade</span>
+                    <select [(ngModel)]="selectedGrade">
+                        <option value="">All grades</option>
+                        @for (grade of grades; track grade) { <option [value]="grade">{{ grade }}</option> }
+                    </select>
+                </label>
+                <label class="select-field">
+                    <span class="visually-hidden">Filter by route</span>
+                    <select [(ngModel)]="selectedRoute">
+                        <option value="">All routes</option>
+                        @for (route of routes; track route) { <option [value]="route">{{ route }}</option> }
+                    </select>
+                </label>
+                <label class="select-field">
+                    <span class="visually-hidden">Filter by attendance</span>
+                    <select [(ngModel)]="selectedAttendance">
+                        <option value="">All attendance</option>
+                        @for (attendance of attendanceOptions; track attendance) { <option [value]="attendance">{{ attendance }}</option> }
+                    </select>
+                </label>
+            </div>
+
+            <div class="student-grid" aria-label="Student results">
+                @for (student of filteredStudents; track student.id) {
+                    <article class="student-card" [routerLink]="['/student-details', student.id]" tabindex="0">
+                        <div class="student-card-header">
+                            <div class="person">
+                                <div>
+                                    <h3>{{ student.name }}</h3>
+                                    <span>{{ student.classTeacher }} · Class teacher</span>
+                                </div>
+                            </div>
+                            <span class="card-arrow" aria-hidden="true">&#8594;</span>
+                        </div>
+                        <div class="student-card-details">
+                            <div><span class="detail-label">Grade</span><strong>{{ student.grade }}</strong></div>
+                            <div><span class="detail-label">Route</span><strong>{{ student.route }}</strong></div>
+                            <div><span class="detail-label">Today</span><span [class]="'attendance-badge attendance-' + student.attendance.toLowerCase()">{{ student.attendance }}</span></div>
+                        </div>
+                    </article>
+                } @empty {
+                    <p class="empty-state">No students match these filters.</p>
+                }
+            </div>
+
+        </section>
+    </div>
+</main>

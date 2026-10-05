@@ -1,0 +1,89 @@
+:root {
+	--font-body: "Avenir Next", "Century Gothic", "Trebuchet MS", sans-serif;
+	--font-size-body: 1rem;
+	--font-size-label: 0.9rem;
+	--font-size-meta: 0.86rem;
+	--control-height: 3rem;
+	--control-radius: 6px;
+	--control-padding: 0.75rem 1rem;
+	--button-padding: 0.75rem 1.25rem;
+	--control-border: #d6dbe3;
+	--control-focus: #42b8aa;
+	--ink: #19233f;
+	--muted-ink: #59627a;
+	--focus-ring: 0 0 0 3px rgba(123, 224, 208, 0.28);
+}
+
+body {
+	margin: 0;
+	color: var(--ink);
+	font-family: var(--font-body);
+	font-size: var(--font-size-body);
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+	min-height: var(--control-height);
+	font: inherit;
+}
+
+input,
+select,
+textarea {
+	width: 100%;
+	padding: var(--control-padding);
+	border: 1px solid var(--control-border);
+	border-radius: var(--control-radius);
+	color: var(--ink);
+	outline: none;
+	transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+label {
+	color: var(--muted-ink);
+	font-size: var(--font-size-label);
+	font-weight: 700;
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: #a0a7b3;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: var(--control-focus);
+	box-shadow: var(--focus-ring);
+}
+
+button {
+	padding: var(--button-padding);
+	border: 1px solid var(--ink);
+	border-radius: var(--control-radius);
+	background: var(--ink);
+	color: #ffffff;
+	cursor: pointer;
+	font-weight: 800;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+button:hover {
+	border-color: #ec6b4d;
+	background: #ec6b4d;
+	transform: translateY(-2px);
+}
+
+button:focus-visible,
+a:focus-visible {
+	outline: 3px solid #ec6b4d;
+	outline-offset: 3px;
+}

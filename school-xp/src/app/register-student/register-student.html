@@ -1,0 +1,93 @@
+<main class="registration-page">
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Admissions / New record</p>
+            <h1>Register a student</h1>
+            <p class="page-intro">Start a student profile with the essential personal and guardian details.</p>
+        </div>
+        <span class="status-label">Draft</span>
+    </header>
+
+    <form #registrationForm class="registration-form">
+        <section class="form-section" aria-labelledby="student-personal-heading">
+            <div class="section-heading">
+                <span class="section-index">01</span>
+                <div>
+                    <h2 id="student-personal-heading">Student details</h2>
+                    <p>Use the email address the student will use to sign up.</p>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="student-first-name">First name <span aria-hidden="true">*</span></label>
+                    <input id="student-first-name" name="firstName" autocomplete="given-name" required />
+                </div>
+                <div class="field">
+                    <label for="student-last-name">Last name <span aria-hidden="true">*</span></label>
+                    <input id="student-last-name" name="lastName" autocomplete="family-name" required />
+                </div>
+                <div class="field field--wide">
+                    <label for="student-email">Email address <span aria-hidden="true">*</span></label>
+                    <input id="student-email" name="email" type="email" autocomplete="email" required />
+                    <span class="field-hint">The student must sign up with this same email address.</span>
+                </div>
+                <div class="field">
+                    <label for="student-aadhaar-number">Aadhaar number <span aria-hidden="true">*</span></label>
+                    <input id="student-aadhaar-number" name="aadhaarNumber" inputmode="numeric" autocomplete="off" minlength="12" maxlength="12" pattern="[0-9]{12}" required />
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="guardian-heading">
+            <div class="section-heading">
+                <span class="section-index">02</span>
+                <div>
+                    <h2 id="guardian-heading">Guardian contact</h2>
+                    <p>Provide a contact for admissions and account coordination.</p>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="guardian-first-name">First name <span aria-hidden="true">*</span></label>
+                    <input id="guardian-first-name" name="guardianFirstName" autocomplete="given-name" required />
+                </div>
+                <div class="field">
+                    <label for="guardian-last-name">Last name <span aria-hidden="true">*</span></label>
+                    <input id="guardian-last-name" name="guardianLastName" autocomplete="family-name" required />
+                </div>
+                <div class="field">
+                    <label for="guardian-relationship">Relationship to student <span aria-hidden="true">*</span></label>
+                    <select id="guardian-relationship" name="guardianTypeId" required>
+                        <option value="">Select relation</option>
+                        <option *ngFor="let guardianType of guardianTypes" [value]="guardianType.guardianTypeId">
+                            {{ guardianType.description }}
+                        </option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="guardian-aadhaar-number">Aadhaar number <span aria-hidden="true">*</span></label>
+                    <input id="guardian-aadhaar-number" name="guardianAadhaarNumber" inputmode="numeric" autocomplete="off" minlength="12" maxlength="12" pattern="[0-9]{12}" required />
+                </div>
+                <div class="field">
+                    <label for="guardian-phone">Phone number <span aria-hidden="true">*</span></label>
+                    <input id="guardian-phone" name="guardianPhone" type="tel" autocomplete="tel" required />
+                </div>
+                <div class="field">
+                    <label for="guardian-email">Email address <span aria-hidden="true">*</span></label>
+                    <input id="guardian-email" name="guardianEmail" type="email" autocomplete="email" required />
+                </div>
+            </div>
+        </section>
+
+        <aside class="signup-note" aria-label="Signup information">
+            <span class="note-mark" aria-hidden="true">i</span>
+            <p>The student can complete the rest of their profile after signing up with the email entered above.</p>
+        </aside>
+
+        <p class="field-hint" role="status" aria-live="polite">{{ statusMessage }}</p>
+
+        <footer class="form-actions">
+            <button class="button-secondary" type="button" [disabled]="isSaving" (click)="saveDraft(registrationForm)">Save draft</button>
+        </footer>
+    </form>
+</main>

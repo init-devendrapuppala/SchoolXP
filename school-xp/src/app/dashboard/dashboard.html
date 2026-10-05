@@ -1,0 +1,168 @@
+<main class="dashboard-shell">
+    <aside class="sidebar">
+        <a class="brand" href="#top">SchoolXP <span>/ workspace</span></a>
+
+        <div class="school-context">
+            <p>Current school</p>
+            <strong>{{ selectedSchool?.name ?? 'No school selected' }}</strong>
+            <span>{{ selectedSchool?.role ?? '' }}</span>
+        </div>
+
+        <nav aria-label="Dashboard navigation">
+            <p class="nav-label">Management</p>
+            <ul>
+                <li><a class="active" href="#top">Overview</a></li>
+                <li><a routerLink="/list-staff">Staff</a></li>
+                <li><a routerLink="/list-students">Students</a></li>
+                <li><a routerLink="/coming-soon">Attendance</a></li>
+                <li><a routerLink="/coming-soon">Approvals <span class="nav-count">--</span></a></li>
+                <li><a routerLink="/coming-soon">Reports</a></li>
+            </ul>
+            <p class="nav-label">Registration</p>
+            <ul>
+                <li><a routerLink="/register-student">Register student</a></li>
+                <li><a routerLink="/register-staff">Register staff</a></li>
+            </ul>
+            <p class="nav-label">Academic</p>
+            <ul>
+                <li><a routerLink="/coming-soon">Performance</a></li>
+                <li><a routerLink="/coming-soon">Classes and subjects</a></li>
+                <li><a routerLink="/coming-soon">Calendar</a></li>
+            </ul>
+            <p class="nav-label">Workspace</p>
+            <ul>
+                <li><a routerLink="/coming-soon">School settings</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="dashboard-content" id="top">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Monday, 7 September 2026</p>
+                <h1>Good morning, Admin.</h1>
+                <p class="header-copy">
+                    {{ selectedSchool ? 'Here is the latest picture of ' + selectedSchool.name + '.' : 'No school has been selected.' }}
+                </p>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="quiet-button" routerLink="/coming-soon">Search</button>
+                <button type="button" class="profile-button" routerLink="/coming-soon" aria-label="Open profile">SA</button>
+                <button type="button" class="quiet-button" (click)="logout()">Sign out</button>
+            </div>
+        </header>
+
+        <section id="students" class="quick-actions" aria-labelledby="quick-actions-heading">
+            <div>
+                <p class="section-kicker">Keep things moving</p>
+                <h2 id="quick-actions-heading">Quick actions</h2>
+            </div>
+            <div class="action-links">
+                <a routerLink="/add-edit-staff/new">Add new staff member <span aria-hidden="true">+</span></a>
+                <a routerLink="/add-edit-student/new">Add new student <span aria-hidden="true">+</span></a>
+                <a routerLink="/coming-soon">Mark attendance <span aria-hidden="true">&#8594;</span></a>
+            </div>
+        </section>
+
+        <section class="metric-grid" aria-label="School summary">
+            <article class="metric-card metric-card-accent">
+                <p>Total students</p>
+                <strong>Coming soon</strong>
+                <span>Enrollment totals and trends</span>
+            </article>
+            <article class="metric-card">
+                <p>Total staff</p>
+                <strong>Coming soon</strong>
+                <span>Staff totals and changes</span>
+            </article>
+            <article class="metric-card">
+                <p>Attendance</p>
+                <strong>Coming soon</strong>
+                <span>Daily school attendance</span>
+            </article>
+            <article class="metric-card metric-card-warm">
+                <p>Open approvals</p>
+                <strong>Coming soon</strong>
+                <span>Items awaiting review</span>
+            </article>
+        </section>
+
+        <section class="dashboard-section" aria-labelledby="management-dashboard">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">At a glance</p>
+                    <h2 id="management-dashboard">Management overview</h2>
+                </div>
+                <span class="section-period">This term</span>
+            </div>
+
+            <div class="overview-grid">
+                <article id="staff" class="dashboard-card staff-card">
+                    <div class="card-heading">
+                        <div>
+                            <p class="card-kicker">People</p>
+                            <h3>Staff and students</h3>
+                        </div>
+                        <a [routerLink]="'/coming-soon'">View details</a>
+                    </div>
+                    <p class="card-note">Students &amp; staff graph - coming soon.</p>
+                </article>
+
+                <article id="attendance" class="dashboard-card attendance-card">
+                    <div class="card-heading">
+                        <div>
+                            <p class="card-kicker">Daily pulse</p>
+                            <h3>Attendance overview</h3>
+                        </div>
+                        <a routerLink="/coming-soon">Reports</a>
+                    </div>
+                    <p class="card-note">Attendance trends - coming soon.</p>
+                </article>
+
+                <article id="approvals" class="dashboard-card approvals-card">
+                    <div class="card-heading">
+                        <div>
+                            <p class="card-kicker">Action required</p>
+                            <h3>Pending approvals</h3>
+                        </div>
+                        <span class="card-status">Open</span>
+                    </div>
+                    <p class="card-note">Approval queue - coming soon.</p>
+                </article>
+
+                <article id="performance" class="dashboard-card performance-card">
+                    <div class="card-heading">
+                        <div>
+                            <p class="card-kicker">Learning outcomes</p>
+                            <h3>Academic performance</h3>
+                        </div>
+                        <a routerLink="/coming-soon">By class</a>
+                    </div>
+                    <p class="card-note">Academic performance insights - coming soon.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="lower-grid" aria-label="School operations">
+            <article id="reports" class="dashboard-card compact-card">
+                <p class="card-kicker">Insights</p>
+                <h3>Reports and insights</h3>
+                <p>Attendance, enrollment, performance, and staff reports ready to explore.</p>
+                <a class="card-link" routerLink="/coming-soon">View reports <span aria-hidden="true">&#8594;</span></a>
+            </article>
+            <article id="calendar" class="dashboard-card compact-card">
+                <p class="card-kicker">Coming up</p>
+                <h3>School calendar</h3>
+                <p>Upcoming events, examinations, holidays, and deadlines.</p>
+                <a class="card-link" routerLink="/coming-soon">Open calendar <span aria-hidden="true">&#8594;</span></a>
+            </article>
+            <article id="settings" class="dashboard-card compact-card">
+                <p class="card-kicker">Workspace</p>
+                <h3>School settings</h3>
+                <p>Manage school information, preferences, and access.</p>
+                <a class="card-link" routerLink="/coming-soon">Open settings <span aria-hidden="true">&#8594;</span></a>
+            </article>
+        </section>
+
+    </div>
+</main>

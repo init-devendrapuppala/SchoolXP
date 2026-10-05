@@ -1,0 +1,214 @@
+<main class="registration-shell">
+    <header class="topbar">
+        <a class="brand" routerLink="/">SchoolXP <span>/ workspace</span></a>
+        <p class="page-label">School registration</p>
+    </header>
+    <div *ngIf="!isSubmitted">
+        <div class="registration-layout">
+            <aside class="intro-panel">
+                <p class="eyebrow">Start with the essentials</p>
+                <h1>Bring your school into focus.</h1>
+                <p class="intro-copy">Set up your school workspace with a few clear details. You can update everything
+                    whenever you need.</p>
+                <div class="accent-line" aria-hidden="true"></div>
+                <p class="aside-note"><span>+</span> Built for the people who keep schools moving.</p>
+            </aside>
+
+            <section class="form-panel" aria-labelledby="registration-heading">
+                <div class="form-heading">
+                    <div>
+                        <h2 id="registration-heading">Register your school</h2>
+                    </div>
+                    <span class="step-number">{{ currentSection === 'school' ? '01' : currentSection === 'admin' ? '02' : '03' }}</span>
+                </div>
+
+                <p *ngIf="errorMessage" role="alert" class="error-message">{{ errorMessage }}</p>
+
+                <nav class="step-navigation" aria-label="Registration steps">
+                    <span [class.active]="currentSection === 'school'">01 School</span>
+                    <span [class.active]="currentSection === 'admin'">02 Admin</span>
+                    <span [class.active]="currentSection === 'review'">03 Review</span>
+                </nav>
+
+                <section *ngIf="currentSection === 'school'" class="registration-section">
+                    <div class="section-intro">
+                        <p class="section-kicker">Section one</p>
+                        <h3>School details</h3>
+                        <p>Tell us about the school workspace you are creating.</p>
+                    </div>
+                    <form [formGroup]="schoolForm" (ngSubmit)="goToAdmin()">
+                    <fieldset>
+                        <div class="field-grid">
+                            <div class="field field-wide">
+                                <label for="schoolName">School name</label>
+                                <input id="schoolName" formControlName="schoolName"
+                                    placeholder="e.g. Northbridge Academy"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolName')">
+                            </div>
+                            <div class="field">
+                                <label for="schoolEmail">School email</label>
+                                <input id="schoolEmail" type="email" formControlName="schoolEmail"
+                                    placeholder="hello@school.edu"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolEmail')">
+                            </div>
+                            <div class="field">
+                                <label for="schoolPhone">School phone</label>
+                                <input id="schoolPhone" type="tel" formControlName="schoolPhone"
+                                    placeholder="+1 555 000 0000"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolPhone')">
+                            </div>
+                            <div class="field field-wide">
+                                <label for="schoolAddress">Address</label>
+                                <input id="schoolAddress" formControlName="schoolAddress" placeholder="Street address"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolAddress')">
+                            </div>
+                            <div class="field">
+                                <label for="schoolCity">City</label>
+                                <input id="schoolCity" formControlName="schoolCity" placeholder="City"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolCity')">
+                            </div>
+                            <div class="field">
+                                <label for="schoolState">State / province</label>
+                                <input id="schoolState" formControlName="schoolState" placeholder="State or province"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolState')">
+                            </div>
+                            <div class="field">
+                                <label for="schoolPostalCode">Postal code</label>
+                                <input id="schoolPostalCode" formControlName="schoolPostalCode"
+                                    placeholder="Postal code"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolPostalCode')">
+                            </div>
+                            <div class="field">
+                                <label for="schoolCountry">Country</label>
+                                <input id="schoolCountry" formControlName="schoolCountry" placeholder="Country"
+                                    [class.invalid]="isFieldInvalid(schoolForm, 'schoolCountry')">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>More about your school <span>Optional</span></legend>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="schoolWebsite">Website</label>
+                                <input id="schoolWebsite" type="url" formControlName="schoolWebsite"
+                                    placeholder="www.school.edu">
+                            </div>
+                            <div class="field">
+                                <label for="schoolAffliation">Affiliation</label>
+                                <input id="schoolAffliation" formControlName="schoolAffliation"
+                                    placeholder="School network">
+                            </div>
+                            <div class="field">
+                                <label for="schoolEstablishedYear">Established year</label>
+                                <input id="schoolEstablishedYear" type="number" formControlName="schoolEstablishedYear"
+                                    placeholder="e.g. 1998">
+                            </div>
+                        </div>
+                    </fieldset>
+                        <div class="form-footer">
+                            <span>Required fields are marked by validation.</span>
+                            <button type="submit">Continue to admin <span aria-hidden="true">&#8594;</span></button>
+                        </div>
+                    </form>
+                </section>
+
+                <section *ngIf="currentSection === 'admin'" class="registration-section">
+                    <div class="section-intro">
+                        <p class="section-kicker">Section two</p>
+                        <h3>Your school administrator</h3>
+                        <p>Tell us who to welcome as the first workspace administrator.</p>
+                    </div>
+                    <form [formGroup]="schoolAdmin" (ngSubmit)="goToReview()">
+                    <fieldset>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="adminFirstName">First name</label>
+                                <input id="adminFirstName" formControlName="firstName" placeholder="First name"
+                                    [class.invalid]="isFieldInvalid(schoolAdmin, 'firstName')">
+                            </div>
+                            <div class="field">
+                                <label for="adminLastName">Last name</label>
+                                <input id="adminLastName" formControlName="lastName" placeholder="Last name"
+                                    [class.invalid]="isFieldInvalid(schoolAdmin, 'lastName')">
+                            </div>
+                            <div class="field">
+                                <label for="adminEmail">Email</label>
+                                <input id="adminEmail" type="email" formControlName="email"
+                                    placeholder="admin@school.edu"
+                                    [class.invalid]="isFieldInvalid(schoolAdmin, 'email')">
+                            </div>
+                            <div class="field">
+                                <label for="adminPhone">Phone</label>
+                                <input id="adminPhone" type="tel" formControlName="phone" placeholder="+1 555 000 0000"
+                                    [class.invalid]="isFieldInvalid(schoolAdmin, 'phone')">
+                            </div>
+                            <div class="field">
+                                <label for="adminGender">Gender</label>
+                                <input id="adminGender" formControlName="gender" placeholder="Gender"
+                                    [class.invalid]="isFieldInvalid(schoolAdmin, 'gender')">
+                            </div>
+                            <div class="field">
+                                <label for="adminDateOfBirth">Date of birth</label>
+                                <input id="adminDateOfBirth" type="date" formControlName="dateOfBirth"
+                                    [class.invalid]="isFieldInvalid(schoolAdmin, 'dateOfBirth')">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-footer">
+                        <button type="button" class="secondary-button" (click)="goToPreviousSection()">Back</button>
+                        <button type="submit">Review details <span aria-hidden="true">&#8594;</span></button>
+                    </div>
+                    </form>
+                </section>
+
+                <section *ngIf="currentSection === 'review'" class="registration-section review-section">
+                    <div class="section-intro">
+                        <p class="section-kicker">Section three</p>
+                        <h3>Review your details</h3>
+                        <p>Check everything once before creating your school workspace.</p>
+                    </div>
+
+                    <div class="review-group">
+                        <div class="review-heading">
+                            <h4>School</h4>
+                            <button type="button" class="text-button" (click)="currentSection = 'school'">Edit</button>
+                        </div>
+                        <dl>
+                            <div><dt>Name</dt><dd>{{ schoolForm.value.schoolName }}</dd></div>
+                            <div><dt>Email</dt><dd>{{ schoolForm.value.schoolEmail }}</dd></div>
+                            <div><dt>Phone</dt><dd>{{ schoolForm.value.schoolPhone }}</dd></div>
+                            <div><dt>Location</dt><dd>{{ schoolForm.value.schoolCity }}, {{ schoolForm.value.schoolState }}, {{ schoolForm.value.schoolCountry }}</dd></div>
+                        </dl>
+                    </div>
+
+                    <div class="review-group">
+                        <div class="review-heading">
+                            <h4>Administrator</h4>
+                            <button type="button" class="text-button" (click)="currentSection = 'admin'">Edit</button>
+                        </div>
+                        <dl>
+                            <div><dt>Name</dt><dd>{{ schoolAdmin.value.firstName }} {{ schoolAdmin.value.lastName }}</dd></div>
+                            <div><dt>Email</dt><dd>{{ schoolAdmin.value.email }}</dd></div>
+                            <div><dt>Phone</dt><dd>{{ schoolAdmin.value.phone }}</dd></div>
+                        </dl>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="button" class="secondary-button" (click)="goToPreviousSection()">Back</button>
+                        <button type="button" [disabled]="isSubmitting" (click)="onSubmit()">
+                            {{ isSubmitting ? 'Registering...' : 'Submit registration' }}
+                            <span aria-hidden="true">&#8594;</span>
+                        </button>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <div *ngIf="isSubmitted" class="success-message">
+        <h2>School registered</h2>
+        <p>The school workspace, administrator profile, and school admin membership were created successfully.</p>
+        <a routerLink="/setup">Continue to school setup</a>
+    </div>
+</main>

@@ -1,0 +1,107 @@
+<main class="page-shell">
+    @if (membershipStatus === 'draft') {
+        <section class="content-card" role="status">
+            <h2>Complete your staff profile</h2>
+            <p>This is a temporary profile-completion placeholder. Any details already provided during registration will be loaded here once the profile API is ready. Profile changes cannot be submitted yet.</p>
+        </section>
+    }
+    @if (membershipStatus === 'pending') {
+        <section class="content-card" role="status">
+            <h2>Profile review in progress</h2>
+            <p>Your completed profile is pending review. You will be able to access the dashboard after it is approved.</p>
+        </section>
+    }
+    <header class="page-header">
+        <p class="eyebrow">Staff records</p>
+        @if (membershipStatus === 'draft') {
+            <h1>Complete Staff Profile</h1>
+            <p>Review the information and complete the remaining details for your profile.</p>
+        } @else if (operationAdd) {
+            <h1>Add Staff</h1>
+            <p>Create a complete staff profile for the school directory.</p>
+        } @else {
+            <h1>Edit Staff</h1>
+            <p>Review and update the staff profile.</p>
+        }
+    </header>
+
+    <form class="staff-form" [hidden]="membershipStatus === 'pending'" [formGroup]="staffForm" (ngSubmit)="submitStaff()">
+        <section class="content-card" formGroupName="personal">
+            <h2>Personal Information</h2>
+            <div class="form-grid">
+                <div><label for="title">Title</label><input id="title" formControlName="title" /></div>
+                <div><label for="firstName">First Name</label><input id="firstName" formControlName="firstName" /></div>
+                <div><label for="middleName">Middle Name</label><input id="middleName" formControlName="middleName" /></div>
+                <div><label for="lastName">Last Name</label><input id="lastName" formControlName="lastName" /></div>
+                <div><label for="dateOfBirth">Date of Birth</label><input id="dateOfBirth" formControlName="dateOfBirth" type="date" /></div>
+                <div><label for="gender">Gender</label><select id="gender" formControlName="gender"><option value="">Select gender</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                <div><label for="maritalStatus">Marital Status</label><select id="maritalStatus" formControlName="maritalStatus"><option value="">Select status</option><option value="single">Single</option><option value="married">Married</option><option value="other">Other</option></select></div>
+                <div><label for="nationality">Nationality</label><input id="nationality" formControlName="nationality" /></div>
+                <div><label for="religion">Religion</label><input id="religion" formControlName="religion" /></div>
+                <div><label for="bloodGroup">Blood Group</label><select id="bloodGroup" formControlName="bloodGroup"><option value="">Select group</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select></div>
+                <div><label for="aadharNumber">Aadhaar Number</label><input id="aadharNumber" formControlName="aadharNumber" inputmode="numeric" /></div>
+            </div>
+        </section>
+
+        <section class="content-card" formGroupName="contact">
+            <h2>Contact Information</h2>
+            <div class="form-grid">
+                <div><label for="email">Email</label><input id="email" formControlName="email" type="email" /></div>
+                <div><label for="phoneNumber">Phone Number</label><input id="phoneNumber" formControlName="phoneNumber" type="tel" /></div>
+                <div><label for="alternatePhoneNumber">Alternate Phone Number</label><input id="alternatePhoneNumber" formControlName="alternatePhoneNumber" type="tel" /></div>
+                <div class="field--wide"><label for="address">Address</label><textarea id="address" formControlName="address" rows="2"></textarea></div>
+                <div><label for="city">City</label><input id="city" formControlName="city" /></div>
+                <div><label for="state">State</label><input id="state" formControlName="state" /></div>
+                <div><label for="postalCode">Postal Code</label><input id="postalCode" formControlName="postalCode" inputmode="numeric" /></div>
+            </div>
+        </section>
+
+        <section class="content-card" formGroupName="employment">
+            <h2>Employment Information</h2>
+            <div class="form-grid">
+                <div><label for="employeeId">Employee ID</label><input id="employeeId" formControlName="employeeId" /></div>
+                <div><label for="joiningDate">Joining Date</label><input id="joiningDate" formControlName="joiningDate" type="date" /></div>
+                <div><label for="employmentType">Employment Type</label><select id="employmentType" formControlName="employmentType"><option value="">Select type</option><option value="full-time">Full-time</option><option value="part-time">Part-time</option><option value="contract">Contract</option></select></div>
+                <div><label for="department">Department</label><input id="department" formControlName="department" /></div>
+                <div><label for="designation">Designation</label><input id="designation" formControlName="designation" /></div>
+                <div><label for="qualification">Qualification</label><input id="qualification" formControlName="qualification" /></div>
+                <div><label for="specialization">Specialization</label><input id="specialization" formControlName="specialization" /></div>
+                <div><label for="experienceYears">Experience in Years</label><input id="experienceYears" formControlName="experienceYears" inputmode="numeric" /></div>
+                <div class="field--wide"><label for="assignedClasses">Assigned Classes or Subjects</label><textarea id="assignedClasses" formControlName="assignedClasses" rows="2"></textarea></div>
+            </div>
+        </section>
+
+        <section class="content-card" formGroupName="emergencyContact">
+            <h2>Emergency Contact</h2>
+            <div class="form-grid">
+                <div><label for="emergencyName">Contact Name</label><input id="emergencyName" formControlName="name" /></div>
+                <div><label for="emergencyRelationship">Relationship</label><input id="emergencyRelationship" formControlName="relationship" /></div>
+                <div><label for="emergencyPhoneNumber">Phone Number</label><input id="emergencyPhoneNumber" formControlName="phoneNumber" type="tel" /></div>
+                <div class="field--wide"><label for="emergencyAddress">Address</label><textarea id="emergencyAddress" formControlName="address" rows="2"></textarea></div>
+            </div>
+        </section>
+
+        <section class="content-card" formGroupName="system">
+            <h2>System Information</h2>
+            <div class="form-grid">
+                <label class="check-field" for="isActive"><input id="isActive" formControlName="isActive" type="checkbox" /><span>Staff record is active</span></label>
+                <div class="field--wide"><label for="remarks">Remarks</label><textarea id="remarks" formControlName="remarks" rows="2"></textarea></div>
+            </div>
+        </section>
+
+        <div class="actions">
+            <button type="button" (click)="cancel()">Cancel</button>
+            <button type="submit" [disabled]="staffForm.invalid || membershipStatus === 'draft'">Save staff</button>
+        </div>
+    </form>
+
+    <section class="content-card documents-card" [hidden]="membershipStatus === 'pending'">
+        <h2>Documents</h2>
+        <form class="form-grid" [formGroup]="documentsForm">
+            <div><label for="photo">Staff Photo</label><input id="photo" formControlName="photo" type="file" accept="image/*" /></div>
+            <div><label for="identityProof">Identity Proof</label><input id="identityProof" formControlName="identityProof" type="file" /></div>
+            <div><label for="qualificationCertificate">Qualification Certificate</label><input id="qualificationCertificate" formControlName="qualificationCertificate" type="file" /></div>
+            <div><label for="resume">Resume</label><input id="resume" formControlName="resume" type="file" /></div>
+        </form>
+    </section>
+</main>

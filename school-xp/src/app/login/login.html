@@ -1,0 +1,105 @@
+<main class="login-shell">
+    <header class="topbar">
+        <a class="brand" routerLink="/">SchoolXP <span>/ workspace</span></a>
+        <span class="topbar-note">The calmer way to run school</span>
+    </header>
+
+    <section class="login-layout">
+        <div class="login-intro">
+            <p class="eyebrow">Less chasing. More progress.</p>
+            <h1>Keep your whole school day in view.</h1>
+            <p class="intro-copy">Bring everyday work into one clear, connected space so your team can spend less time searching and more time moving forward.</p>
+            <div class="intro-line"><span></span><span></span><span></span></div>
+            <p class="intro-note"><span class="status-dot"></span>Made for the people who keep schools moving.</p>
+        </div>
+
+        <div class="auth-column">
+            <div class="form-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-kicker">Your workspace</p>
+                        <h2>
+                            @if (mode === 'login') { Welcome back. }
+                            @if (mode === 'signup') { Create your account. }
+                            @if (mode === 'confirm') { Check your email. }
+                        </h2>
+                    </div>
+                    <span class="panel-number">01</span>
+                </div>
+
+                @if (errorMessage) {
+                <p class="form-message error-message" role="alert">{{ errorMessage }}</p>
+                }
+                @if (statusMessage) {
+                <p class="form-message status-message" role="status">{{ statusMessage }}</p>
+                }
+
+                @if (mode === 'login') {
+                <form (ngSubmit)="login()">
+                    <label for="login-email">Email address</label>
+                    <input id="login-email" type="email" name="email" [(ngModel)]="email" autocomplete="email" required>
+
+                    <label for="login-password">Password</label>
+                    <input id="login-password" type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required>
+
+                    <div class="auth-actions">
+                        <button type="submit" class="primary-button" [disabled]="isSubmitting">
+                            {{ isSubmitting ? 'Signing in...' : 'Continue to login' }} <span aria-hidden="true">&#8594;</span>
+                        </button>
+                    </div>
+                </form>
+                <div class="panel-footer">
+                    <p>Forgot your password? <a routerLink="/change-password">Reset it here</a></p>
+                    <p>New to SchoolXP? <button type="button" class="text-button" (click)="showSignUp()">Create an account</button></p>
+                </div>
+                }
+
+                @if (mode === 'signup') {
+                <form (ngSubmit)="signUp()">
+                    <div class="name-fields">
+                        <div>
+                            <label for="first-name">First name</label>
+                            <input id="first-name" type="text" name="firstName" [(ngModel)]="firstName" autocomplete="given-name" required>
+                        </div>
+                        <div>
+                            <label for="last-name">Last name</label>
+                            <input id="last-name" type="text" name="lastName" [(ngModel)]="lastName" autocomplete="family-name" required>
+                        </div>
+                    </div>
+
+                    <label for="signup-email">Email address</label>
+                    <input id="signup-email" type="email" name="email" [(ngModel)]="email" autocomplete="email" required>
+
+                    <label for="signup-password">Password</label>
+                    <input id="signup-password" type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required>
+
+                    <div class="auth-actions">
+                        <button type="submit" class="primary-button" [disabled]="isSubmitting">
+                            {{ isSubmitting ? 'Creating account...' : 'Create account' }} <span aria-hidden="true">&#8594;</span>
+                        </button>
+                    </div>
+                </form>
+                <div class="panel-footer">
+                    <p>Already have an account? <button type="button" class="text-button" (click)="showLogin()">Sign in</button></p>
+                </div>
+                }
+
+                @if (mode === 'confirm') {
+                <form (ngSubmit)="confirmAccount()">
+                    <p class="confirmation-copy">Enter the confirmation code sent to <strong>{{ email }}</strong>.</p>
+                    <label for="confirmation-code">Confirmation code</label>
+                    <input id="confirmation-code" type="text" name="confirmationCode" [(ngModel)]="confirmationCode" autocomplete="one-time-code" required>
+                    <div class="auth-actions">
+                        <button type="submit" class="primary-button" [disabled]="isSubmitting">
+                            {{ isSubmitting ? 'Confirming...' : 'Confirm account' }} <span aria-hidden="true">&#8594;</span>
+                        </button>
+                    </div>
+                </form>
+                <div class="panel-footer">
+                    <p>Entered the wrong email? <button type="button" class="text-button" (click)="showSignUp()">Back to sign up</button></p>
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+</main>

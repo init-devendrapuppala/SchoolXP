@@ -1,0 +1,113 @@
+<main class="student-page">
+    @if (membershipStatus === 'draft') {
+        <section class="form-card form-card--wide" role="status">
+            <h2>Complete your student profile</h2>
+            <p>This is a temporary profile-completion placeholder. Any details already provided during registration will be loaded here once the profile API is ready. Profile changes cannot be submitted yet.</p>
+        </section>
+    }
+    @if (membershipStatus === 'pending') {
+        <section class="form-card form-card--wide" role="status">
+            <h2>Profile review in progress</h2>
+            <p>Your completed profile is pending review. You will be able to access the dashboard after it is approved.</p>
+        </section>
+    }
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Admissions / Student records</p>
+            @if (membershipStatus === 'draft') {
+                <h2 class="section-heading">Complete Student Profile</h2>
+                <p class="page-intro">Review the information and complete the remaining details for your profile.</p>
+            } @else if (operationAdd) {
+                <h2 class="section-heading">Add Student</h2>
+                <p class="page-intro">Create a complete student profile for the new admission.</p>
+            } @else {
+                <h2 class="section-heading">Edit Student</h2>
+                <p class="page-intro">Review and update the student admission record.</p>
+            }
+        </div>
+        <span class="record-badge">Required details</span>
+    </header>
+
+    <form class="admission-form" [hidden]="membershipStatus === 'pending'" [formGroup]="admissionForm" (ngSubmit)="submitAdmission()">
+        <div class="form-sections">
+            <section class="form-card form-card--wide" formGroupName="student">
+                <h3>Student Information</h3>
+                <div class="section-form">
+                    <div><label for="title">Title:</label><input id="title" formControlName="title" /></div>
+                    <div><label for="firstName">First Name:</label><input id="firstName" formControlName="firstName" /></div>
+                    <div><label for="lastName">Last Name:</label><input id="lastName" formControlName="lastName" /></div>
+                    <div><label for="email">Email:</label><input id="email" formControlName="email" type="email" /></div>
+                    <div><label for="studentEnrollmentNumber">Student Enrollment Number:</label><input id="studentEnrollmentNumber" formControlName="studentEnrollmentNumber" /></div>
+                    <div><label for="dateOfBirth">Date of Birth:</label><input id="dateOfBirth" formControlName="dateOfBirth" type="date" /></div>
+                    <div><label for="gender">Gender:</label><select id="gender" formControlName="gender"><option value="">Select gender</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                    <div><label for="phoneNumber">Phone:</label><input id="phoneNumber" formControlName="phoneNumber" type="tel" /></div>
+                    <div class="field--wide"><label for="address">Address:</label><textarea id="address" formControlName="address" rows="2"></textarea></div>
+                    <div><label for="aadharNumber">Aadhaar Number:</label><input id="aadharNumber" formControlName="aadharNumber" inputmode="numeric" /></div>
+                </div>
+            </section>
+
+            <section class="form-card" formGroupName="guardian">
+                <h3>Guardian Information</h3>
+                <div class="section-form">
+                    <div class="field--wide"><label for="guardianName">Guardian Name:</label><input id="guardianName" formControlName="guardianName" /></div>
+                    <div><label for="guardianPhoneNumber">Guardian Phone:</label><input id="guardianPhoneNumber" formControlName="guardianPhoneNumber" type="tel" /></div>
+                    <div><label for="guardianEmail">Guardian Email:</label><input id="guardianEmail" formControlName="guardianEmail" type="email" /></div>
+                    <div class="field--wide"><label for="guardianAddress">Guardian Address:</label><textarea id="guardianAddress" formControlName="guardianAddress" rows="2"></textarea></div>
+                    <div class="field--wide"><label for="guardianRelationship">Guardian Relationship:</label><input id="guardianRelationship" formControlName="guardianRelationship" /></div>
+                </div>
+            </section>
+
+            <section class="form-card" formGroupName="academic">
+                <h3>Academic Information</h3>
+                <div class="section-form">
+                    <div><label for="class">Class:</label><input id="class" formControlName="class" /></div>
+                    <div><label for="section">Section:</label><input id="section" formControlName="section" /></div>
+                    <div><label for="rollNumber">Roll Number:</label><input id="rollNumber" formControlName="rollNumber" /></div>
+                    <div><label for="admissionDate">Admission Date:</label><input id="admissionDate" formControlName="admissionDate" type="date" /></div>
+                    <div class="field--wide"><label for="previousSchool">Previous School:</label><input id="previousSchool" formControlName="previousSchool" /></div>
+                    <div><label for="lastYearGrade">Last Year's Grade/Class:</label><input id="lastYearGrade" formControlName="lastYearGrade" /></div>
+                    <div><label for="lastYearResults">Last Year's Results:</label><input id="lastYearResults" formControlName="lastYearResults" /></div>
+                    <div class="field--wide"><label for="transferCertificateNumber">Transfer Certificate Number:</label><input id="transferCertificateNumber" formControlName="transferCertificate" /></div>
+                </div>
+            </section>
+
+            <section class="form-card" formGroupName="administrative">
+                <h3>Administrative Information</h3>
+                <div class="section-form">
+                    <div><label for="nationality">Nationality:</label><input id="nationality" formControlName="nationality" /></div>
+                    <div><label for="religion">Religion:</label><input id="religion" formControlName="religion" /></div>
+                    <label class="check-field" for="isDisabled"><input id="isDisabled" formControlName="isDisabled" type="checkbox" /><span>Accessibility support required</span></label>
+                    <label class="check-field" for="transportRequired"><input id="transportRequired" formControlName="transportRequired" type="checkbox" /><span>School transport required</span></label>
+                    <div><label for="stayStatus">Hostel / Day Scholar:</label><input id="stayStatus" formControlName="stayStatus" /></div>
+                    <div><label for="bloodGroup">Blood Group:</label><select id="bloodGroup" formControlName="bloodGroup"><option value="">Select blood group</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select></div>
+                </div>
+            </section>
+
+            <section class="form-card form-card--muted form-card--wide" formGroupName="system">
+                <h3>System Information</h3>
+                <div class="section-form">
+                    <div class="metadata-field"><span class="metadata-label">Admitted By</span><span class="metadata-value">Managed by system</span></div>
+                    <div class="metadata-field"><span class="metadata-label">Admission Date</span><span class="metadata-value">Managed by system</span></div>
+                    <div class="metadata-field"><span class="metadata-label">Updated By</span><span class="metadata-value">Managed by system</span></div>
+                    <div class="metadata-field"><span class="metadata-label">Updated At</span><span class="metadata-value">Managed by system</span></div>
+                    <label class="check-field" for="isActive"><input id="isActive" formControlName="isActive" type="checkbox" /><span>Student record is active</span></label>
+                    <div class="field--wide"><label for="Remarks">Remarks:</label><textarea id="Remarks" formControlName="Remarks" rows="2"></textarea></div>
+                </div>
+            </section>
+        </div>
+        <div class="form-actions">
+            <button type="submit" [disabled]="admissionForm.invalid || membershipStatus === 'draft'">Submit</button>
+        </div>
+    </form>
+
+    <section class="form-card form-card--wide documents-card" [hidden]="membershipStatus === 'pending'">
+        <h3>Documents</h3>
+        <form class="section-form" [formGroup]="documentsForm">
+            <div><label for="photo">Photo:</label><input id="photo" formControlName="photo" type="file" /></div>
+            <div><label for="birthCertificate">Birth Certificate:</label><input id="birthCertificate" formControlName="birthCertificate" type="file" /></div>
+            <div><label for="aadharCard">Aadhaar Card:</label><input id="aadharCard" formControlName="aadharCard" type="file" /></div>
+            <div><label for="transferCertificateDocument">Transfer Certificate:</label><input id="transferCertificateDocument" formControlName="transferCertificate" type="file" /></div>
+            <div><label for="reportCard">Previous Report Card:</label><input id="reportCard" formControlName="reportCard" type="file" /></div>
+        </form>
+    </section>
+</main>

@@ -1,0 +1,105 @@
+<main class="staff-shell">
+    <div class="staff-content" id="top">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Staff directory</p>
+                <h1>Staff list</h1>
+                <p class="header-copy">Keep track of the people who make Northbridge Academy work.</p>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="quiet-button" aria-label="Search staff">⌕ <span>Search</span></button>
+                <button type="button" class="profile-button" aria-label="Open profile">SA</button>
+            </div>
+        </header>
+
+        <section class="directory-intro" aria-labelledby="directory-heading">
+            <div>
+                <p class="section-kicker">2026 / 27 school year</p>
+                <h2 id="directory-heading">Everyone on the team</h2>
+            </div>
+            <button type="button" routerLink="/add-edit-staff/new" class="primary-button"><span aria-hidden="true">+</span> Add staff member</button>
+        </section>
+
+        <section class="summary-grid" aria-label="Staff summary">
+            <article class="summary-card summary-card-accent">
+                <span class="summary-label">Total staff</span>
+                <strong>42</strong>
+                <span class="summary-note">Across all departments</span>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Teaching staff</span>
+                <strong>31</strong>
+                <span class="summary-note">74% of the team</span>
+            </article>
+            <article class="summary-card summary-card-warm">
+                <span class="summary-label">On leave today</span>
+                <strong>03</strong>
+                <span class="summary-note">2 teaching, 1 support</span>
+            </article>
+        </section>
+
+        <section class="directory-panel" id="staff-list" aria-labelledby="staff-table-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-kicker">Directory</p>
+                    <h2 id="staff-table-heading">All staff members <span>{{ staffMembers.length }} people</span></h2>
+                </div>
+                <button class="filter-button" type="button">Filter <span aria-hidden="true">⌄</span></button>
+            </div>
+
+            <div class="directory-tools">
+                <label class="search-field">
+                    <span aria-hidden="true">⌕</span>
+                    <span class="visually-hidden">Search staff members</span>
+                    <input type="search" placeholder="Search by name, role or department">
+                </label>
+                <label class="select-field">
+                    <span class="visually-hidden">Filter by department</span>
+                    <select>
+                        <option>All departments</option>
+                        <option>Teaching</option>
+                        <option>Administration</option>
+                        <option>Support</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <caption class="visually-hidden">Staff members at Northbridge Academy</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Staff type</th>
+                            <th scope="col">Subject / Area</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (staff of staffMembers; track staff.id) {
+                            <tr>
+                                <td data-label="Name"><div class="person"><span [class]="'avatar ' + staff.avatarClass">{{ staff.initials }}</span><strong>{{ staff.name }}</strong></div></td>
+                                <td data-label="Email">{{ staff.email }}</td>
+                                <td data-label="Staff type"><span [class]="'type-badge ' + staff.typeClass">{{ staff.type }}</span></td>
+                                <td data-label="Subject / Area">{{ staff.subjectOrDepartment }}</td>
+                                <td data-label="Actions" class="row-actions">                                    
+                                    <a class="action-button action-view" [routerLink]="['/staff-details', staff.id]">View</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <footer class="table-footer">
+                <span>Showing {{ staffMembers.length }} staff members</span>
+                <div class="pagination" aria-label="Pagination">
+                    <button type="button" disabled aria-label="Previous page">&#8592;</button>
+                    <strong>1</strong>
+                    <button type="button" aria-label="Next page">&#8594;</button>
+                </div>
+            </footer>
+        </section>
+    </div>
+</main>

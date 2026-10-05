@@ -1,0 +1,36 @@
+<main>
+    <header>
+        <a routerLink="/">SchoolXP / workspace</a>
+        <p>{{ isPlatformAdmin ? 'Platform Admin' : 'School selection' }}</p>
+        <h1>Select a school</h1>
+        <p>Choose a school to open its management dashboard.</p>
+    </header>
+
+    <nav *ngIf="isPlatformAdmin" aria-label="Platform admin actions">
+        <a routerLink="/register-school">Add school</a>
+        <a routerLink="/add-school-admin">Register school admin</a>
+        <a routerLink="/coming-soon">School application approvals</a>
+    </nav>
+
+    <section aria-labelledby="schools-heading">
+        <h2 id="schools-heading">{{ isPlatformAdmin ? 'All schools' : 'Your schools' }}</h2>
+        <p>Select a school to continue to its dashboard or profile.</p>
+
+        <p *ngIf="schools.length === 0">
+            {{ isPlatformAdmin ? 'No schools have been registered yet.' : 'Your school list could not be loaded. Please sign in again.' }}
+            <a *ngIf="!isPlatformAdmin" routerLink="/login">Go to sign in</a>
+        </p>
+
+        <ul *ngIf="schools.length > 0">
+            <li *ngFor="let school of schools">
+                <button type="button" class="school-card" [disabled]="school.status.toLowerCase() === 'inactive'" (click)="selectSchool(school)">
+                    <span class="school-one">
+                        <strong>{{ school.name }}</strong>
+                        <span>{{ school.role }} · {{ school.status }}</span>
+                    </span>
+                    <span aria-hidden="true">{{ school.status.toLowerCase() === 'active' ? 'Open dashboard' : school.status.toLowerCase() === 'inactive' ? 'Unavailable' : 'Open profile' }} &rarr;</span>
+                </button>
+            </li>
+        </ul>
+    </section>
+</main>

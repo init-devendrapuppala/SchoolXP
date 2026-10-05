@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="IdentityService/IdentityService.csproj" />
+  <Project Path="SchoolService/SchoolService.csproj" Id="c4010cdf-5dba-4385-bf82-172acd575537" />
+</Solution>

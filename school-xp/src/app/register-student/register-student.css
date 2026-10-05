@@ -1,0 +1,228 @@
+:host {
+	display: block;
+	min-height: 100vh;
+	background: #f7f6f1;
+}
+
+.registration-page {
+	width: min(860px, calc(100% - 2rem));
+	margin: 0 auto;
+	padding: 3rem 0 5rem;
+}
+
+.page-header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1.5rem;
+	margin-bottom: 1.75rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid #dfe8e5;
+}
+
+.eyebrow {
+	margin: 0 0 0.65rem;
+	color: #168879;
+	font-size: 0.75rem;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.page-header h1 {
+	margin: 0;
+	color: #19233f;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 2.6rem;
+	line-height: 1.1;
+}
+
+.page-intro {
+	margin: 0.65rem 0 0;
+	color: #59627a;
+}
+
+.status-label {
+	flex: 0 0 auto;
+	padding: 0.5rem 0.7rem;
+	border: 1px solid #b8ded7;
+	background: #e8f7f3;
+	color: #167c70;
+	font-size: 0.76rem;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.registration-form {
+	display: grid;
+	gap: 1rem;
+}
+
+.form-section {
+	padding: 1.4rem;
+	border: 1px solid #dfe8e5;
+	background: #ffffff;
+}
+
+.section-heading {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.85rem;
+	margin-bottom: 1.25rem;
+}
+
+.section-index {
+	display: grid;
+	flex: 0 0 2rem;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	background: #19233f;
+	color: #ffffff;
+	font-size: 0.72rem;
+	font-weight: 800;
+}
+
+.section-heading h2 {
+	margin: 0;
+	color: #19233f;
+	font-size: 1.12rem;
+}
+
+.section-heading p,
+.field-hint {
+	margin: 0.25rem 0 0;
+	color: #69758a;
+	font-size: 0.85rem;
+}
+
+.field-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.field {
+	display: grid;
+	align-content: start;
+	gap: 0.4rem;
+	min-width: 0;
+}
+
+.field--wide {
+	grid-column: 1 / -1;
+}
+
+.field label {
+	color: #59627a;
+	font-size: 0.9rem;
+	font-weight: 700;
+}
+
+.field label span {
+	color: #c84f37;
+}
+
+.field input[type="file"] {
+	padding: 0.55rem;
+	border-style: dashed;
+	background: #fbfdfc;
+	font-size: 0.85rem;
+}
+
+.signup-note {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 1rem 1.1rem;
+	border-left: 3px solid #168879;
+	background: #eaf5f1;
+}
+
+.note-mark {
+	display: grid;
+	flex: 0 0 1.3rem;
+	place-items: center;
+	width: 1.3rem;
+	height: 1.3rem;
+	border-radius: 50%;
+	background: #168879;
+	color: #ffffff;
+	font-size: 0.8rem;
+	font-weight: 800;
+}
+
+.signup-note p {
+	margin: 0;
+	color: #365e58;
+	font-size: 0.9rem;
+	line-height: 1.5;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+}
+
+.form-actions button {
+	min-width: 9rem;
+}
+
+.button-secondary {
+	border-color: #c8d2cf;
+	background: #ffffff;
+	color: #19233f;
+}
+
+.button-secondary:hover {
+	border-color: #168879;
+	background: #eaf5f1;
+	color: #19233f;
+}
+
+.button-primary {
+	border-color: #168879;
+	background: #168879;
+}
+
+.button-primary:hover {
+	border-color: #126e64;
+	background: #126e64;
+}
+
+@media (max-width: 600px) {
+	.registration-page {
+		width: min(100% - 1.25rem, 38rem);
+		padding-top: 1.75rem;
+	}
+
+	.page-header {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.page-header h1 {
+		font-size: 2.1rem;
+	}
+
+	.form-section {
+		padding: 1.1rem;
+	}
+
+	.field-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.field--wide {
+		grid-column: auto;
+	}
+
+	.form-actions {
+		flex-direction: column-reverse;
+	}
+
+	.form-actions button {
+		width: 100%;
+	}
+}
