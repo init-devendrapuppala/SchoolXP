@@ -6,7 +6,7 @@ namespace SchoolService.Application.Abstractions
     {
         Task<Guid> RegisterStudentAsync(
             StudentRegistrationData registration,
-            Guid identityUserId,
+            Guid userId,
             Guid schoolId,
             string createdBy,
             CancellationToken ct);

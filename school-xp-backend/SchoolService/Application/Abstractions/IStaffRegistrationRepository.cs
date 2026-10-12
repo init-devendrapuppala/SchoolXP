@@ -7,7 +7,7 @@ public interface IStaffRegistrationRepository
     Task<Guid> CreateDraftAsync(
         StaffRegistrationData registration,
         string encryptedAadhaar,
-        Guid identityUserId,
+        Guid userId,
         Guid schoolId,
         string createdBy,
         CancellationToken ct);

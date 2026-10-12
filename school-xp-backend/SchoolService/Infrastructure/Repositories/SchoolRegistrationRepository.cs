@@ -19,7 +19,7 @@ public class SchoolRegistrationRepository(SchoolDbContext context) : ISchoolRegi
 
     public async Task<Guid> RegisterSchoolAsync(
         SchoolRegistrationData registration,
-        Guid identityUserId,
+        Guid userId,
         string createdBy,
         CancellationToken ct)
     {
@@ -92,35 +92,37 @@ public class SchoolRegistrationRepository(SchoolDbContext context) : ISchoolRegi
         };
         await context.Schools.AddAsync(school, ct);
 
-        var person = await context.People
-            .Include(existingPerson => existingPerson.Contacts)
-            .SingleOrDefaultAsync(existingPerson => existingPerson.IdentityUserId == identityUserId, ct);
-        if (person is null)
+        var user = await context.UserProfiles
+            .Include(existingUser => existingUser.Contacts)
+            .SingleOrDefaultAsync(existingUser => existingUser.UserId == userId, ct);
+        if (user is null)
         {
-            person = new Person
+            user = new UserProfile
             {
-                IdentityUserId = identityUserId,
                 FirstName = registration.FirstName.Trim(),
                 LastName = registration.LastName.Trim(),
-                EmailAddress = registration.Email.Trim(),
+                Email = registration.Email.Trim().ToLowerInvariant(),
+                IsAccount = true,
+                IsActive = true,
+                CreatedAtUtc = DateTime.UtcNow,
                 Gender = registration.Gender.Trim(),
                 DateOfBirth = registration.DateOfBirth,
             };
-            await context.People.AddAsync(person, ct);
+            await context.UserProfiles.AddAsync(user, ct);
         }
         else
         {
-            person.FirstName = registration.FirstName.Trim();
-            person.LastName = registration.LastName.Trim();
-            person.EmailAddress = registration.Email.Trim();
-            person.Gender = registration.Gender.Trim();
-            person.DateOfBirth = registration.DateOfBirth;
+            user.FirstName = registration.FirstName.Trim();
+            user.LastName = registration.LastName.Trim();
+            user.Email = registration.Email.Trim().ToLowerInvariant();
+            user.Gender = registration.Gender.Trim();
+            user.DateOfBirth = registration.DateOfBirth;
         }
 
-        var phoneContact = person.Contacts.FirstOrDefault(        contact => contact.ContactTypeId == phoneType.ContactTypeId);
+        var phoneContact = user.Contacts.FirstOrDefault(contact => contact.ContactTypeId == phoneType.ContactTypeId);
         if (phoneContact is null)
         {
-            person.Contacts.Add(new PersonContact
+            user.Contacts.Add(new PersonContact
             {
                 ContactTypeId = phoneType.ContactTypeId,
                 Value = registration.Phone.Trim(),
@@ -136,7 +138,7 @@ public class SchoolRegistrationRepository(SchoolDbContext context) : ISchoolRegi
         await context.SchoolMemberships.AddAsync(new SchoolMembership
         {
             SchoolId = school.SchoolId,
-            Person = person,
+            UserProfile = user,
             RoleTypeId = schoolAdminRole.RoleTypeId,
             MembershipStatusId = activeStatusId.Value,
             CreatedAtUtc = DateTime.UtcNow,

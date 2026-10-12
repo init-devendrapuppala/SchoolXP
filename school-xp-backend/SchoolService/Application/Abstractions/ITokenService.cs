@@ -1,4 +1,4 @@
-namespace IdentityService.Application.Abstractions;
+namespace SchoolService.Application.Abstractions;
 
 public interface ITokenService
 {

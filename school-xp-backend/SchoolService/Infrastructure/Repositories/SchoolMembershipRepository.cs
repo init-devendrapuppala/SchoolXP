@@ -8,13 +8,13 @@ namespace SchoolService.Infrastructure.Repositories;
 public class SchoolMembershipRepository(SchoolDbContext context) : ISchoolMembershipRepository
 {
     public async Task<IReadOnlyList<SchoolMembershipAssignment>> GetMembershipsForUserAsync(
-        Guid identityUserId,
+        Guid userId,
         CancellationToken ct)
     {
         return await context.SchoolMemberships
             .AsNoTracking()
             .Where(membership =>
-                membership.Person.IdentityUserId == identityUserId &&
+                membership.UserId == userId &&
                 membership.RoleType.IsActive &&
                 membership.School.IsActive)
             .Select(membership => new
@@ -35,13 +35,13 @@ public class SchoolMembershipRepository(SchoolDbContext context) : ISchoolMember
     }
 
     public async Task<IReadOnlyList<SchoolRoleAssignment>> GetActiveRolesForUserAsync(
-        Guid identityUserId,
+        Guid userId,
         CancellationToken ct)
     {
         return await context.SchoolMemberships
             .AsNoTracking()
             .Where(membership =>
-                membership.Person.IdentityUserId == identityUserId &&
+                membership.UserId == userId &&
                 membership.MembershipStatus.Code == "active" &&
                 membership.RoleType.IsActive &&
                 membership.School.IsActive)

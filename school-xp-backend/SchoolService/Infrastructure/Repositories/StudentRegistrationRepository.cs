@@ -13,7 +13,7 @@ public class StudentRegistrationRepository(SchoolDbContext context) : IStudentRe
         StudentRegistrationData registration,
         string encryptedStudentAadhaar,
         string encryptedGuardianAadhaar,
-        Guid identityUserId,
+        Guid userId,
         Guid schoolId,
         string createdBy,
         CancellationToken ct)
@@ -23,11 +23,11 @@ public class StudentRegistrationRepository(SchoolDbContext context) : IStudentRe
         var phoneContactTypeCode = EContactTypeCode.Phone.ToString().ToLowerInvariant();
         var aadhaarDocumentTypeCode = EIdentityDocumentTypeCode.Aadhaar.ToString().ToLowerInvariant();
 
-        var existingPerson = await context.People
-            .Include(person => person.Memberships)
+        var existingUser = await context.UserProfiles
+            .Include(user => user.Memberships)
                 .ThenInclude(membership => membership.RoleType)
-            .Include(person => person.IdentityDocuments)
-            .SingleOrDefaultAsync(person => person.IdentityUserId == identityUserId, ct);
+            .Include(user => user.IdentityDocuments)
+            .SingleOrDefaultAsync(user => user.UserId == userId, ct);
 
         var studentTypeId = await context.RoleTypes
             .Where(role => role.Code == studentRoleCode)
@@ -68,17 +68,19 @@ public class StudentRegistrationRepository(SchoolDbContext context) : IStudentRe
             throw new InvalidOperationException("The Aadhaar identity document type is not configured.");
         }
 
-        var student = existingPerson ?? new Person
+        var student = existingUser ?? new UserProfile
         {
-            IdentityUserId = identityUserId,
             FirstName = registration.FirstName.Trim(),
             LastName = registration.LastName.Trim(),
-            EmailAddress = registration.Email.Trim(),
+            Email = registration.Email.Trim().ToLowerInvariant(),
+            IsAccount = true,
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow,
         };
 
-        if (existingPerson is not null)
+        if (existingUser is not null)
         {
-            var existingMembership = existingPerson.Memberships.SingleOrDefault(membership =>
+            var existingMembership = existingUser.Memberships.SingleOrDefault(membership =>
                 membership.SchoolId == schoolId &&
                 membership.RoleType.Code == studentRoleCode);
             if (existingMembership is not null)
@@ -88,14 +90,16 @@ public class StudentRegistrationRepository(SchoolDbContext context) : IStudentRe
 
             student.FirstName = registration.FirstName.Trim();
             student.LastName = registration.LastName.Trim();
-            student.EmailAddress = registration.Email.Trim();
+            student.Email = registration.Email.Trim().ToLowerInvariant();
         }
 
-        var guardian = new Person
+        var guardian = new UserProfile
         {
             FirstName = registration.GuardianFirstName.Trim(),
             LastName = registration.GuardianLastName.Trim(),
-            EmailAddress = registration.GuardianEmail.Trim(),
+            Email = registration.GuardianEmail.Trim().ToLowerInvariant(),
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow,
         };
         if (!student.IdentityDocuments.Any(document =>
                 document.IdentityDocumentTypeId == aadhaarType.IdentityDocumentTypeId))
@@ -125,21 +129,21 @@ public class StudentRegistrationRepository(SchoolDbContext context) : IStudentRe
             MembershipStatusId = draftStatusId.Value,
             CreatedAtUtc = DateTime.UtcNow,
             CreatedBy = createdBy,
-            Person = student,
+            UserProfile = student,
         };
         membership.Guardians.Add(new Guardian
         {
-            GuardianPerson = guardian,
+            GuardianUserProfile = guardian,
             RelationshipType = guardianType,
             IsPrimary = true,
             CanReceiveCommunications = true,
         });
 
-        if (existingPerson is null)
+        if (existingUser is null)
         {
-            await context.People.AddAsync(student, ct);
+            await context.UserProfiles.AddAsync(student, ct);
         }
-        await context.People.AddAsync(guardian, ct);
+        await context.UserProfiles.AddAsync(guardian, ct);
         await context.SchoolMemberships.AddAsync(membership, ct);
         await context.SaveChangesAsync(ct);
 

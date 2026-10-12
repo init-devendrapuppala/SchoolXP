@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolService.API.Contracts;
 using SchoolService.Application.Abstractions;
+using SchoolService.Application.Authentication;
 using SchoolService.Application.Contracts;
 using SchoolService.Domain.Enums;
 using System.Security.Claims;
@@ -13,7 +14,7 @@ namespace SchoolService.API.Controllers;
 [Route("api/staff/registrations")]
 public class StaffRegistrationController(
     IStaffService staffService,
-    IIdentityUserClient identityUserClient) : ControllerBase
+    IIdentityUserService identityUserService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> RegisterStaff(StaffRegistrationRequest request, CancellationToken ct)
@@ -56,13 +57,19 @@ public class StaffRegistrationController(
             return BadRequest(new { message = "Staff and emergency contact details are invalid or incomplete." });
         }
 
-        var accessToken = authorization["Bearer ".Length..].Trim();
-        var identityUserId = await identityUserClient.CreateOrGetUserAsync(
-            request.Email.Trim(),
-            request.FirstName.Trim(),
-            request.LastName.Trim(),
-            accessToken,
-            ct);
+        Guid userId;
+        try
+        {
+            userId = await identityUserService.CreateOrGetUserAsync(
+                request.Email.Trim(),
+                request.FirstName.Trim(),
+                request.LastName.Trim(),
+                ct);
+        }
+        catch (AmbiguousUserEmailException)
+        {
+            return Conflict(new { message = "This email address matches multiple profiles; contact support." });
+        }
 
         var membershipId = await staffService.RegisterStaffAsync(
             new StaffRegistrationData(
@@ -77,7 +84,7 @@ public class StaffRegistrationController(
                 request.EmergencyContactRelationship,
                 request.EmergencyContactPhone,
                 request.EmergencyContactEmail),
-            identityUserId,
+            userId,
             schoolId,
             email,
             ct);

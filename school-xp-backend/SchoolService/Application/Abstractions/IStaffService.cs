@@ -6,7 +6,7 @@ public interface IStaffService
 {
     Task<Guid> RegisterStaffAsync(
         StaffRegistrationData registration,
-        Guid identityUserId,
+        Guid userId,
         Guid schoolId,
         string createdBy,
         CancellationToken ct);

@@ -8,7 +8,7 @@ public interface ISchoolRegistrationRepository
 
     Task<Guid> RegisterSchoolAsync(
         SchoolRegistrationData registration,
-        Guid identityUserId,
+        Guid userId,
         string createdBy,
         CancellationToken ct);
 }

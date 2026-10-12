@@ -162,13 +162,13 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("can_receive_communications");
 
-                    b.Property<Guid>("GuardianPersonId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("guardian_person_id");
-
                     b.Property<int>("GuardianTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("guardian_type_id");
+
+                    b.Property<Guid>("GuardianUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("guardian_user_id");
 
                     b.Property<bool>("IsAuthorizedForPickup")
                         .HasColumnType("boolean")
@@ -185,15 +185,15 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                     b.HasKey("GuardianId")
                         .HasName("pk_guardians");
 
-                    b.HasIndex("GuardianPersonId")
-                        .HasDatabaseName("ix_guardians_guardian_person_id");
-
                     b.HasIndex("GuardianTypeId")
                         .HasDatabaseName("ix_guardians_guardian_type_id");
 
-                    b.HasIndex("StudentMembershipId", "GuardianPersonId")
+                    b.HasIndex("GuardianUserId")
+                        .HasDatabaseName("ix_guardians_guardian_user_id");
+
+                    b.HasIndex("StudentMembershipId", "GuardianUserId")
                         .IsUnique()
-                        .HasDatabaseName("ix_guardians_student_membership_id_guardian_person_id");
+                        .HasDatabaseName("ix_guardians_student_membership_id_guardian_user_id");
 
                     b.ToTable("guardians", "sd");
                 });
@@ -413,58 +413,6 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SchoolService.Domain.Entities.Person", b =>
-                {
-                    b.Property<Guid?>("PersonId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("person_id");
-
-                    b.Property<DateOnly?>("DateOfBirth")
-                        .HasColumnType("date")
-                        .HasColumnName("date_of_birth");
-
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email_address");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("first_name");
-
-                    b.Property<string>("Gender")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("gender");
-
-                    b.Property<Guid?>("IdentityUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("identity_user_id");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("last_name");
-
-                    b.Property<string>("MiddleName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("middle_name");
-
-                    b.HasKey("PersonId")
-                        .HasName("pk_people");
-
-                    b.HasIndex("IdentityUserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_people_identity_user_id");
-
-                    b.ToTable("people", "per");
-                });
-
             modelBuilder.Entity("SchoolService.Domain.Entities.PersonAddress", b =>
                 {
                     b.Property<Guid>("PersonAddressId")
@@ -503,10 +451,6 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_primary");
 
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("person_id");
-
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -518,14 +462,18 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("state_or_province");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
                     b.HasKey("PersonAddressId")
                         .HasName("pk_person_addresses");
 
                     b.HasIndex("AddressTypeId")
                         .HasDatabaseName("ix_person_addresses_address_type_id");
 
-                    b.HasIndex("PersonId")
-                        .HasDatabaseName("ix_person_addresses_person_id");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_person_addresses_user_id");
 
                     b.ToTable("person_addresses", "per");
                 });
@@ -549,9 +497,9 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_verified");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("person_id");
+                        .HasColumnName("user_id");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -565,8 +513,8 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                     b.HasIndex("ContactTypeId")
                         .HasDatabaseName("ix_person_contacts_contact_type_id");
 
-                    b.HasIndex("PersonId")
-                        .HasDatabaseName("ix_person_contacts_person_id");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_person_contacts_user_id");
 
                     b.ToTable("person_contacts", "per");
                 });
@@ -588,9 +536,9 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("identity_document_type_id");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("person_id");
+                        .HasColumnName("user_id");
 
                     b.Property<DateTime?>("VerifiedAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -602,8 +550,8 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                     b.HasIndex("IdentityDocumentTypeId")
                         .HasDatabaseName("ix_person_identity_documents_identity_document_type_id");
 
-                    b.HasIndex("PersonId")
-                        .HasDatabaseName("ix_person_identity_documents_person_id");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_person_identity_documents_user_id");
 
                     b.ToTable("person_identity_documents", "per");
                 });
@@ -748,10 +696,6 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("membership_status_id");
 
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("person_id");
-
                     b.Property<int>("RoleTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("role_type_id");
@@ -769,17 +713,21 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("updated_by");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
                     b.HasKey("SchoolMembershipId")
                         .HasName("pk_school_memberships");
 
                     b.HasIndex("MembershipStatusId")
                         .HasDatabaseName("ix_school_memberships_membership_status_id");
 
-                    b.HasIndex("PersonId")
-                        .HasDatabaseName("ix_school_memberships_person_id");
-
                     b.HasIndex("RoleTypeId")
                         .HasDatabaseName("ix_school_memberships_role_type_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_school_memberships_user_id");
 
                     b.HasIndex("SchoolId", "MemberNumber")
                         .IsUnique()
@@ -887,21 +835,117 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                     b.ToTable("student_previous_schools", "sd");
                 });
 
+            modelBuilder.Entity("SchoolService.Domain.Entities.UserIdentity", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Sub")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("sub");
+
+                    b.HasKey("UserId", "Sub")
+                        .HasName("pk_user_identities");
+
+                    b.HasIndex("Sub")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_identities_sub");
+
+                    b.ToTable("user_identities", "per");
+                });
+
+            modelBuilder.Entity("SchoolService.Domain.Entities.UserProfile", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_birth");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("first_name");
+
+                    b.Property<string>("Gender")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("gender");
+
+                    b.Property<bool>("IsAccount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_account");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsPlatformAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_platform_admin");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("last_name");
+
+                    b.Property<string>("MiddleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("middle_name");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("UserId")
+                        .HasName("pk_user_profiles");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_profiles_email")
+                        .HasFilter("\"is_account\" = TRUE");
+
+                    b.ToTable("user_profiles", "per");
+                });
+
             modelBuilder.Entity("SchoolService.Domain.Entities.Guardian", b =>
                 {
-                    b.HasOne("SchoolService.Domain.Entities.Person", "GuardianPerson")
-                        .WithMany("Guardians")
-                        .HasForeignKey("GuardianPersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_guardians_people_guardian_person_id");
-
                     b.HasOne("SchoolService.Domain.Entities.GuardianType", "RelationshipType")
                         .WithMany("Relationships")
                         .HasForeignKey("GuardianTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_guardians_guardian_types_guardian_type_id");
+
+                    b.HasOne("SchoolService.Domain.Entities.UserProfile", "GuardianUserProfile")
+                        .WithMany("Guardians")
+                        .HasForeignKey("GuardianUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_guardians_user_profiles_guardian_user_id");
 
                     b.HasOne("SchoolService.Domain.Entities.SchoolMembership", "StudentMembership")
                         .WithMany("Guardians")
@@ -910,7 +954,7 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_guardians_school_memberships_student_membership_id");
 
-                    b.Navigation("GuardianPerson");
+                    b.Navigation("GuardianUserProfile");
 
                     b.Navigation("RelationshipType");
 
@@ -967,16 +1011,16 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_person_addresses_address_types_address_type_id");
 
-                    b.HasOne("SchoolService.Domain.Entities.Person", "Person")
+                    b.HasOne("SchoolService.Domain.Entities.UserProfile", "UserProfile")
                         .WithMany("Addresses")
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_person_addresses_people_person_id");
+                        .HasConstraintName("fk_person_addresses_user_profiles_user_id");
 
                     b.Navigation("AddressType");
 
-                    b.Navigation("Person");
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("SchoolService.Domain.Entities.PersonContact", b =>
@@ -988,16 +1032,16 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_person_contacts_contact_types_contact_type_id");
 
-                    b.HasOne("SchoolService.Domain.Entities.Person", "Person")
+                    b.HasOne("SchoolService.Domain.Entities.UserProfile", "UserProfile")
                         .WithMany("Contacts")
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_person_contacts_people_person_id");
+                        .HasConstraintName("fk_person_contacts_user_profiles_user_id");
 
                     b.Navigation("ContactType");
 
-                    b.Navigation("Person");
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("SchoolService.Domain.Entities.PersonIdentityDocument", b =>
@@ -1009,16 +1053,16 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_person_identity_documents_identity_document_types_identity_");
 
-                    b.HasOne("SchoolService.Domain.Entities.Person", "Person")
+                    b.HasOne("SchoolService.Domain.Entities.UserProfile", "UserProfile")
                         .WithMany("IdentityDocuments")
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_person_identity_documents_people_person_id");
+                        .HasConstraintName("fk_person_identity_documents_user_profiles_user_id");
 
                     b.Navigation("IdentityDocumentType");
 
-                    b.Navigation("Person");
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("SchoolService.Domain.Entities.SchoolMembership", b =>
@@ -1029,13 +1073,6 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_school_memberships_membership_statuses_membership_status_id");
-
-                    b.HasOne("SchoolService.Domain.Entities.Person", "Person")
-                        .WithMany("Memberships")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_school_memberships_people_person_id");
 
                     b.HasOne("SchoolService.Domain.Entities.RoleType", "RoleType")
                         .WithMany("Memberships")
@@ -1051,13 +1088,20 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_school_memberships_schools_school_id");
 
-                    b.Navigation("MembershipStatus");
+                    b.HasOne("SchoolService.Domain.Entities.UserProfile", "UserProfile")
+                        .WithMany("Memberships")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_school_memberships_user_profiles_user_id");
 
-                    b.Navigation("Person");
+                    b.Navigation("MembershipStatus");
 
                     b.Navigation("RoleType");
 
                     b.Navigation("School");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("SchoolService.Domain.Entities.StaffEmergencyContact", b =>
@@ -1082,6 +1126,18 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_student_previous_schools_school_memberships_school_membersh");
 
                     b.Navigation("SchoolMembership");
+                });
+
+            modelBuilder.Entity("SchoolService.Domain.Entities.UserIdentity", b =>
+                {
+                    b.HasOne("SchoolService.Domain.Entities.UserProfile", "UserProfile")
+                        .WithMany("UserIdentities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_identities_user_profiles_user_id");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("SchoolService.Domain.Entities.AddressType", b =>
@@ -1119,19 +1175,6 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                     b.Navigation("Memberships");
                 });
 
-            modelBuilder.Entity("SchoolService.Domain.Entities.Person", b =>
-                {
-                    b.Navigation("Addresses");
-
-                    b.Navigation("Contacts");
-
-                    b.Navigation("Guardians");
-
-                    b.Navigation("IdentityDocuments");
-
-                    b.Navigation("Memberships");
-                });
-
             modelBuilder.Entity("SchoolService.Domain.Entities.RoleType", b =>
                 {
                     b.Navigation("Memberships");
@@ -1153,6 +1196,21 @@ namespace SchoolService.Infrastructure.Persistence.Migrations
                     b.Navigation("MedicalProfile");
 
                     b.Navigation("PreviousSchools");
+                });
+
+            modelBuilder.Entity("SchoolService.Domain.Entities.UserProfile", b =>
+                {
+                    b.Navigation("Addresses");
+
+                    b.Navigation("Contacts");
+
+                    b.Navigation("Guardians");
+
+                    b.Navigation("IdentityDocuments");
+
+                    b.Navigation("Memberships");
+
+                    b.Navigation("UserIdentities");
                 });
 #pragma warning restore 612, 618
         }

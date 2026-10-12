@@ -8,7 +8,7 @@ public interface IStudentRegistrationRepository
         StudentRegistrationData registration,
         string encryptedStudentAadhaar,
         string encryptedGuardianAadhaar,
-        Guid identityUserId,
+        Guid userId,
         Guid schoolId,
         string createdBy,
         CancellationToken ct);

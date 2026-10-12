@@ -12,7 +12,7 @@ public class StaffRegistrationRepository(SchoolDbContext context) : IStaffRegist
     public async Task<Guid> CreateDraftAsync(
         StaffRegistrationData registration,
         string encryptedAadhaar,
-        Guid identityUserId,
+        Guid userId,
         Guid schoolId,
         string createdBy,
         CancellationToken ct)
@@ -32,11 +32,11 @@ public class StaffRegistrationRepository(SchoolDbContext context) : IStaffRegist
         var phoneContactCode = EContactTypeCode.Phone.ToString().ToLowerInvariant();
         var aadhaarDocumentCode = EIdentityDocumentTypeCode.Aadhaar.ToString().ToLowerInvariant();
 
-        var existingPerson = await context.People
-            .Include(person => person.Memberships)
+        var existingUser = await context.UserProfiles
+            .Include(user => user.Memberships)
                 .ThenInclude(membership => membership.RoleType)
-            .Include(person => person.IdentityDocuments)
-            .SingleOrDefaultAsync(person => person.IdentityUserId == identityUserId, ct);
+            .Include(user => user.IdentityDocuments)
+            .SingleOrDefaultAsync(user => user.UserId == userId, ct);
 
         var roleTypeId = await context.RoleTypes
             .Where(role => role.Code == roleCode)
@@ -74,17 +74,19 @@ public class StaffRegistrationRepository(SchoolDbContext context) : IStaffRegist
             throw new InvalidOperationException("The Aadhaar identity document type is not configured.");
         }
 
-        var staff = existingPerson ?? new Person
+        var staff = existingUser ?? new UserProfile
         {
-            IdentityUserId = identityUserId,
             FirstName = registration.FirstName.Trim(),
             LastName = registration.LastName.Trim(),
-            EmailAddress = registration.Email.Trim(),
+            Email = registration.Email.Trim().ToLowerInvariant(),
+            IsAccount = true,
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow,
         };
 
-        if (existingPerson is not null)
+        if (existingUser is not null)
         {
-            var existingMembership = existingPerson.Memberships.SingleOrDefault(membership =>
+            var existingMembership = existingUser.Memberships.SingleOrDefault(membership =>
                 membership.SchoolId == schoolId &&
                 membership.RoleType.Code == roleCode);
             if (existingMembership is not null)
@@ -94,7 +96,7 @@ public class StaffRegistrationRepository(SchoolDbContext context) : IStaffRegist
 
             staff.FirstName = registration.FirstName.Trim();
             staff.LastName = registration.LastName.Trim();
-            staff.EmailAddress = registration.Email.Trim();
+            staff.Email = registration.Email.Trim().ToLowerInvariant();
         }
 
         if (!staff.IdentityDocuments.Any(document => document.IdentityDocumentTypeId == aadhaarTypeId.Value))
@@ -120,7 +122,7 @@ public class StaffRegistrationRepository(SchoolDbContext context) : IStaffRegist
             MembershipStatusId = draftStatusId.Value,
             CreatedAtUtc = DateTime.UtcNow,
             CreatedBy = createdBy,
-            Person = staff,
+            UserProfile = staff,
         };
         membership.EmergencyContacts.Add(new StaffEmergencyContact
         {
@@ -133,9 +135,9 @@ public class StaffRegistrationRepository(SchoolDbContext context) : IStaffRegist
                 : registration.EmergencyContactEmail.Trim(),
         });
 
-        if (existingPerson is null)
+        if (existingUser is null)
         {
-            await context.People.AddAsync(staff, ct);
+            await context.UserProfiles.AddAsync(staff, ct);
         }
         await context.SchoolMemberships.AddAsync(membership, ct);
         await context.SaveChangesAsync(ct);

@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using SchoolService.Application.Abstractions;
+using SchoolService.Application.Authentication;
 using SchoolService.Application.Services;
 using SchoolService.Infrastructure.Persistence;
 using SchoolService.Infrastructure.Repositories;
 using SchoolService.Infrastructure.Services;
 using System.Security.Claims;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +17,6 @@ var issuer = builder.Configuration["CognitoJwtConfig:Issuer"]
     ?? throw new InvalidOperationException("CognitoJwtConfig:Issuer is not configured.");
 var expectedClientId = builder.Configuration["CognitoJwtConfig:Audience"]
     ?? throw new InvalidOperationException("CognitoJwtConfig:Audience is not configured.");
-var identityServiceBaseUrl = builder.Configuration["IdentityService:BaseUrl"]
-    ?? throw new InvalidOperationException("IdentityService:BaseUrl is not configured.");
-
 // Add services to the container.
 
 builder.Services.AddDbContext<SchoolDbContext>(options =>
@@ -40,17 +37,8 @@ else if (builder.Environment.IsProduction())
     throw new InvalidOperationException("DataProtection:KeysPath must point to a persistent protected key store in production.");
 }
 
-builder.Services.AddHttpClient("IdentityService", client =>
-{
-    client.BaseAddress = new Uri(identityServiceBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(5);
-});
-
-builder.Services.AddHttpClient<IIdentityUserClient, IdentityUserClient>(client =>
-{
-    client.BaseAddress = new Uri(identityServiceBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(5);
-});
+builder.Services.AddScoped<IIdentityUserService, IdentityUserService>();
+builder.Services.AddSingleton<ITokenService>(_ => new TokenService(issuer, expectedClientId));
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IStudentRegistrationRepository, StudentRegistrationRepository>();
 builder.Services.AddScoped<IStaffService, StaffService>();
@@ -95,35 +83,37 @@ builder.Services
                     return;
                 }
 
-                var authorizationHeader = context.Request.Headers["Authorization"].ToString();
-                if (string.IsNullOrWhiteSpace(authorizationHeader))
-                {
-                    context.Fail("Missing bearer token.");
-                    return;
-                }
-
                 try
                 {
-                    var httpClient = context.HttpContext.RequestServices
-                        .GetRequiredService<IHttpClientFactory>()
-                        .CreateClient("IdentityService");
-                    using var request = new HttpRequestMessage(HttpMethod.Get, "api/Auth");
-                    request.Headers.TryAddWithoutValidation("Authorization", authorizationHeader);
-
-                    using var response = await httpClient.SendAsync(
-                        request,
-                        context.HttpContext.RequestAborted);
-                    if (!response.IsSuccessStatusCode)
+                    var subject = token.Claims.FirstOrDefault(claim => claim.Type == "sub")?.Value;
+                    if (string.IsNullOrWhiteSpace(subject))
                     {
-                        context.Fail("IdentityService could not resolve the authenticated user.");
+                        context.Fail("The authenticated access token has no Cognito subject.");
                         return;
                     }
 
-                    var user = await response.Content.ReadFromJsonAsync<IdentityUserResponse>(
-                        cancellationToken: context.HttpContext.RequestAborted);
-                    if (user is null || user.Id == Guid.Empty || string.IsNullOrWhiteSpace(user.Email))
+                    var identityUserService = context.HttpContext.RequestServices
+                        .GetRequiredService<IIdentityUserService>();
+                    var user = await identityUserService.FindUserByCognitoSubAsync(
+                        subject,
+                        context.HttpContext.RequestAborted);
+                    if (user is null &&
+                        string.Equals(
+                            context.Request.Path.Value,
+                            "/api/auth/resolve-user",
+                            StringComparison.OrdinalIgnoreCase))
                     {
-                        context.Fail("IdentityService returned an invalid user response.");
+                        return;
+                    }
+
+                    if (user is null || user.UserId == Guid.Empty || string.IsNullOrWhiteSpace(user.Email))
+                    {
+                        context.Fail("The authenticated user is not linked to an active profile.");
+                        return;
+                    }
+                    if (!user.IsActive)
+                    {
+                        context.Fail("The authenticated user profile is inactive.");
                         return;
                     }
 
@@ -135,7 +125,7 @@ builder.Services
                     }
 
                     RemoveClaims(identity, "user_id", "email", "school_role", "school_id", "school-id", "is_platform_admin");
-                    identity.AddClaim(new Claim("user_id", user.Id.ToString()));
+                    identity.AddClaim(new Claim("user_id", user.UserId.ToString()));
                     identity.AddClaim(new Claim("email", user.Email));
                     if (user.IsPlatformAdmin)
                     {
@@ -144,7 +134,7 @@ builder.Services
 
                     var memberships = await context.HttpContext.RequestServices
                         .GetRequiredService<ISchoolMembershipRepository>()
-                        .GetActiveRolesForUserAsync(user.Id, context.HttpContext.RequestAborted);
+                        .GetActiveRolesForUserAsync(user.UserId, context.HttpContext.RequestAborted);
 
                     var isPlatformAdmin = user.IsPlatformAdmin;
                     var hasSchoolHeader = context.Request.Headers.ContainsKey("X-School-Id");
@@ -204,6 +194,10 @@ builder.Services
                     exception is not OperationCanceledException ||
                     !context.HttpContext.RequestAborted.IsCancellationRequested)
                 {
+                    context.HttpContext.RequestServices
+                        .GetRequiredService<ILoggerFactory>()
+                        .CreateLogger("SchoolService.Authentication")
+                        .LogError(exception, "User roles could not be resolved for an authenticated request.");
                     context.Fail("User roles could not be resolved.");
                 }
             }
@@ -253,5 +247,3 @@ static void RemoveClaims(ClaimsIdentity identity, params string[] claimTypes)
         identity.RemoveClaim(claim);
     }
 }
-
-internal sealed record IdentityUserResponse(Guid Id, string Email, bool IsPlatformAdmin);

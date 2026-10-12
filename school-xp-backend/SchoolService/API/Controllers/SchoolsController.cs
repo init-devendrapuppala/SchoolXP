@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolService.Application.Abstractions;
+using SchoolService.Application.Authentication;
 using SchoolService.Application.Contracts;
 using SchoolService.API.Contracts;
 using System.Net.Mail;
@@ -14,14 +15,14 @@ namespace SchoolService.API.Controllers;
 public class SchoolsController(
     ISchoolMembershipRepository schoolMembershipRepository,
     ISchoolRegistrationRepository schoolRegistrationRepository,
-    IIdentityUserClient identityUserClient) : ControllerBase
+    IIdentityUserService identityUserService) : ControllerBase
 {
     [HttpGet("mine")]
     public async Task<ActionResult<MySchoolsResponse>> GetMySchools(
         CancellationToken ct)
     {
-        if (!Guid.TryParse(User.FindFirstValue("user_id"), out var identityUserId) ||
-            identityUserId == Guid.Empty)
+        if (!Guid.TryParse(User.FindFirstValue("user_id"), out var userId) ||
+            userId == Guid.Empty)
         {
             return Unauthorized();
         }
@@ -40,7 +41,7 @@ public class SchoolsController(
                     .ToArray()));
         }
 
-        var memberships = await schoolMembershipRepository.GetMembershipsForUserAsync(identityUserId, ct);
+        var memberships = await schoolMembershipRepository.GetMembershipsForUserAsync(userId, ct);
         var schools = memberships
             .Select(membership => new UserSchoolResponse(
                 membership.SchoolId,
@@ -63,9 +64,7 @@ public class SchoolsController(
         }
 
         var email = User.FindFirstValue("email");
-        var authorization = Request.Headers.Authorization.ToString();
-        if (string.IsNullOrWhiteSpace(email) ||
-            !authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(email))
         {
             return Unauthorized();
         }
@@ -81,13 +80,19 @@ public class SchoolsController(
             return Conflict(new { message = "A school with this name is already registered." });
         }
 
-        var accessToken = authorization["Bearer ".Length..].Trim();
-        var identityUserId = await identityUserClient.CreateOrGetUserAsync(
-            request.Email.Trim(),
-            request.FirstName.Trim(),
-            request.LastName.Trim(),
-            accessToken,
-            ct);
+        Guid userId;
+        try
+        {
+            userId = await identityUserService.CreateOrGetUserAsync(
+                request.Email.Trim(),
+                request.FirstName.Trim(),
+                request.LastName.Trim(),
+                ct);
+        }
+        catch (AmbiguousUserEmailException)
+        {
+            return Conflict(new { message = "This email address matches multiple profiles; contact support." });
+        }
 
         try
         {
@@ -110,11 +115,11 @@ public class SchoolsController(
                     request.Phone,
                     request.Gender,
                     request.DateOfBirth),
-                identityUserId,
+                userId,
                 email,
                 ct);
 
-            return Ok(new { schoolId, adminUserId = identityUserId });
+            return Ok(new { schoolId, adminUserId = userId });
         }
         catch (SchoolAlreadyExistsException)
         {

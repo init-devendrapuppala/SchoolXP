@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolService.API.Contracts;
 using SchoolService.Application.Abstractions;
+using SchoolService.Application.Authentication;
 using SchoolService.Application.Contracts;
 using SchoolService.Domain.Enums;
 using System.Security.Claims;
@@ -14,7 +15,7 @@ namespace SchoolService.API.Controllers;
 public class StudentRegistrationController(
     IGuardianService guardianService,
     IStudentService studentService,
-    IIdentityUserClient identityUserClient) : ControllerBase
+    IIdentityUserService identityUserService) : ControllerBase
 {
 
     [HttpGet]
@@ -63,13 +64,19 @@ public class StudentRegistrationController(
             return BadRequest(new { message = "Student and guardian details are invalid or incomplete." });
         }
 
-        var accessToken = authorization["Bearer ".Length..].Trim();
-        var identityUserId = await identityUserClient.CreateOrGetUserAsync(
-            request.Email.Trim(),
-            request.FirstName.Trim(),
-            request.LastName.Trim(),
-            accessToken,
-            ct);
+        Guid userId;
+        try
+        {
+            userId = await identityUserService.CreateOrGetUserAsync(
+                request.Email.Trim(),
+                request.FirstName.Trim(),
+                request.LastName.Trim(),
+                ct);
+        }
+        catch (AmbiguousUserEmailException)
+        {
+            return Conflict(new { message = "This email address matches multiple profiles; contact support." });
+        }
 
         var membershipId = await studentService.RegisterStudentAsync(
             new StudentRegistrationData(
@@ -83,7 +90,7 @@ public class StudentRegistrationController(
                 request.GuardianTypeId,
                 request.GuardianPhone,
                 request.GuardianEmail),
-            identityUserId,
+            userId,
             schoolId,
             email,
             ct);

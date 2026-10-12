@@ -1,3 +1,3 @@
-namespace IdentityService.API.Contracts;
+namespace SchoolService.API.Contracts;
 
 public sealed record ResolveUserRequest(string IdToken);

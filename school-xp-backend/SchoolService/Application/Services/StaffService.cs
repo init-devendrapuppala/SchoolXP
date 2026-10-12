@@ -9,7 +9,7 @@ public class StaffService(
 {
     public Task<Guid> RegisterStaffAsync(
         StaffRegistrationData registration,
-        Guid identityUserId,
+        Guid userId,
         Guid schoolId,
         string createdBy,
         CancellationToken ct)
@@ -18,7 +18,7 @@ public class StaffService(
         return registrationRepository.CreateDraftAsync(
             registration,
             encryptedAadhaar,
-            identityUserId,
+            userId,
             schoolId,
             createdBy,
             ct);

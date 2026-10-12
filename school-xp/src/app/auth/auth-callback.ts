@@ -44,7 +44,7 @@ export class AuthCallback implements OnInit {
 
       const user = await firstValueFrom(
         this.http.post<ResolvedUser>(
-          `${API_BASE_URLS.identity}/api/auth/resolve-user`,
+          `${API_BASE_URLS.school}/api/auth/resolve-user`,
           { idToken: idToken.toString() }
         )
       );

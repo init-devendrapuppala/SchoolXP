@@ -6,7 +6,8 @@ namespace SchoolService.Infrastructure.Persistence;
 public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbContext(options)
 {
 	public DbSet<School> Schools => Set<School>();
-	public DbSet<Person> People => Set<Person>();
+	public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
+	public DbSet<UserIdentity> UserIdentities => Set<UserIdentity>();
 	public DbSet<RoleType> RoleTypes => Set<RoleType>();
 	public DbSet<MembershipStatus> MembershipStatuses => Set<MembershipStatus>();
 	public DbSet<SchoolMembership> SchoolMemberships => Set<SchoolMembership>();
@@ -46,15 +47,35 @@ public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbCont
 			entity.Property(school => school.Affiliation).HasMaxLength(200);
 		});
 
-		modelBuilder.Entity<Person>(entity =>
+		modelBuilder.Entity<UserProfile>(entity =>
 		{
-			entity.ToTable("people", "per");
-			entity.HasKey(person => person.PersonId);
-			entity.HasIndex(person => person.IdentityUserId).IsUnique();
-			entity.Property(person => person.FirstName).HasMaxLength(100).IsRequired();
-			entity.Property(person => person.MiddleName).HasMaxLength(100);
-			entity.Property(person => person.LastName).HasMaxLength(100).IsRequired();
-			entity.Property(person => person.Gender).HasMaxLength(50);
+			entity.ToTable("user_profiles", "per");
+			entity.HasKey(user => user.UserId);
+			entity.Property(user => user.UserId).HasDefaultValueSql("gen_random_uuid()");
+			entity.Property(user => user.FirstName).HasMaxLength(100).IsRequired();
+			entity.Property(user => user.MiddleName).HasMaxLength(100);
+			entity.Property(user => user.LastName).HasMaxLength(100).IsRequired();
+			entity.Property(user => user.Email).HasMaxLength(320).IsRequired();
+			entity.Property(user => user.IsAccount).HasDefaultValue(false).IsRequired();
+			entity.HasIndex(user => user.Email)
+				.IsUnique()
+				.HasFilter("\"is_account\" = TRUE");
+			entity.Property(user => user.Gender).HasMaxLength(50);
+			entity.Property(user => user.IsActive).IsRequired();
+			entity.Property(user => user.IsPlatformAdmin).HasDefaultValue(false).IsRequired();
+			entity.Property(user => user.CreatedAtUtc).IsRequired();
+		});
+
+		modelBuilder.Entity<UserIdentity>(entity =>
+		{
+			entity.ToTable("user_identities", "per");
+			entity.HasKey(identity => new { identity.UserId, identity.Sub });
+			entity.Property(identity => identity.Sub).HasMaxLength(200).IsRequired();
+			entity.HasIndex(identity => identity.Sub).IsUnique();
+			entity.HasOne(identity => identity.UserProfile)
+				.WithMany(user => user.UserIdentities)
+				.HasForeignKey(identity => identity.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
 		});
 
 		modelBuilder.Entity<RoleType>(entity =>
@@ -93,9 +114,9 @@ public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbCont
 				.WithMany(school => school.Memberships)
 				.HasForeignKey(membership => membership.SchoolId)
 				.OnDelete(DeleteBehavior.Restrict);
-			entity.HasOne(membership => membership.Person)
-				.WithMany(person => person.Memberships)
-				.HasForeignKey(membership => membership.PersonId)
+			entity.HasOne(membership => membership.UserProfile)
+				.WithMany(user => user.Memberships)
+				.HasForeignKey(membership => membership.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
 			entity.HasOne(membership => membership.RoleType)
 				.WithMany(type => type.Memberships)
@@ -137,9 +158,9 @@ public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbCont
 			entity.ToTable("person_contacts", "per");
 			entity.HasKey(contact => contact.PersonContactId);
 			entity.Property(contact => contact.Value).HasMaxLength(320).IsRequired();
-			entity.HasOne(contact => contact.Person)
-				.WithMany(person => person.Contacts)
-				.HasForeignKey(contact => contact.PersonId)
+			entity.HasOne(contact => contact.UserProfile)
+				.WithMany(user => user.Contacts)
+				.HasForeignKey(contact => contact.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
 			entity.HasOne(contact => contact.ContactType)
 				.WithMany(type => type.Contacts)
@@ -166,9 +187,9 @@ public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbCont
 			entity.Property(address => address.StateOrProvince).HasMaxLength(100);
 			entity.Property(address => address.PostalCode).HasMaxLength(20).IsRequired();
 			entity.Property(address => address.CountryCode).HasMaxLength(2).IsRequired();
-			entity.HasOne(address => address.Person)
-				.WithMany(person => person.Addresses)
-				.HasForeignKey(address => address.PersonId)
+			entity.HasOne(address => address.UserProfile)
+				.WithMany(user => user.Addresses)
+				.HasForeignKey(address => address.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
 			entity.HasOne(address => address.AddressType)
 				.WithMany(type => type.Addresses)
@@ -254,15 +275,15 @@ public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbCont
 			entity.HasIndex(relationship => new
 			{
 				relationship.StudentMembershipId,
-				relationship.GuardianPersonId
+				relationship.GuardianUserId
 			}).IsUnique();
 			entity.HasOne(relationship => relationship.StudentMembership)
 				.WithMany(membership => membership.Guardians)
 				.HasForeignKey(relationship => relationship.StudentMembershipId)
 				.OnDelete(DeleteBehavior.Restrict);
-			entity.HasOne(relationship => relationship.GuardianPerson)
-				.WithMany(person => person.Guardians)
-				.HasForeignKey(relationship => relationship.GuardianPersonId)
+			entity.HasOne(relationship => relationship.GuardianUserProfile)
+				.WithMany(user => user.Guardians)
+				.HasForeignKey(relationship => relationship.GuardianUserId)
 				.OnDelete(DeleteBehavior.Restrict);
 			entity.HasOne(relationship => relationship.RelationshipType)
 				.WithMany(type => type.Relationships)
@@ -284,9 +305,9 @@ public class SchoolDbContext(DbContextOptions<SchoolDbContext> options) : DbCont
 			entity.ToTable("person_identity_documents", "per");
 			entity.HasKey(document => document.PersonIdentityDocumentId);
 			entity.Property(document => document.EncryptedIdentifier).HasMaxLength(2048).IsRequired();
-			entity.HasOne(document => document.Person)
-				.WithMany(person => person.IdentityDocuments)
-				.HasForeignKey(document => document.PersonId)
+			entity.HasOne(document => document.UserProfile)
+				.WithMany(user => user.IdentityDocuments)
+				.HasForeignKey(document => document.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
 			entity.HasOne(document => document.IdentityDocumentType)
 				.WithMany(type => type.IdentityDocuments)

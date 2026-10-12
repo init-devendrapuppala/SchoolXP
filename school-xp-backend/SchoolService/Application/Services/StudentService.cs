@@ -9,7 +9,7 @@ namespace SchoolService.Application.Services
     {
         public async Task<Guid> RegisterStudentAsync(
             StudentRegistrationData registration,
-            Guid identityUserId,
+            Guid userId,
             Guid schoolId,
             string createdBy,
             CancellationToken ct)
@@ -21,7 +21,7 @@ namespace SchoolService.Application.Services
                 registration,
                 encryptedStudentAadhaar,
                 encryptedGuardianAadhaar,
-                identityUserId,
+                userId,
                 schoolId,
                 createdBy,
                 ct);
